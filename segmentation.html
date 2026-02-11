@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3. Segmentation Analysis | STP Analysis in R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Same CSS as previous files */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            padding-left: 1rem;
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 2rem;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .section:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .section-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 1.125rem;
+        }
+        
+        .concept-card {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .concept-card.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+        
+        .concept-card.tip {
+            border-left-color: var(--success);
+            background: #ecfdf5;
+        }
+        
+        .concept-card.info {
+            border-left-color: var(--accent);
+            background: #ecfeff;
+        }
+        
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .concept-title::before {
+            content: "💡";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .warning .concept-title::before { content: "⚠️"; }
+        .tip .concept-title::before { content: "✅"; }
+        .info .concept-title::before { content: "ℹ️"; }
+        
+        h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--dark);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .formula-box {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid var(--gray-700);
+        }
+        
+        .formula-box::before {
+            content: "Mathematical Foundation";
+            position: absolute;
+            top: -12px;
+            left: 12px;
+            background: var(--primary);
+            color: white;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .math-symbol {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .math-var {
+            color: #60a5fa;
+            font-style: italic;
+        }
+        
+        .math-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .code-container {
+            margin: 1.75rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .code-header {
+            background: var(--dark-800);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .code-label {
+            display: flex;
+            align-items: center;
+        }
+        
+        .code-label::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff5f57;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gray-100);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: var(--dark);
+        }
+        
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.5rem;
+            border-radius: 0 0 12px 12px;
+            margin: 0;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .comment { color: #94a3b8; }
+        .function { color: #60a5fa; }
+        .string { color: #fbbf24; }
+        .number { color: #10b981; }
+        .keyword { color: #f87171; }
+        .operator { color: #93c5fd; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--dark-800), var(--dark-900));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: var(--gray-50);
+        }
+        
+        .comparison-table tr:hover td {
+            background-color: #dbeafe;
+        }
+        
+        .method-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            color: white !important;
+            font-weight: 700;
+        }
+        
+        .visualization-container {
+            background: white;
+            border: 1px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1.75rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            height: 300px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder svg {
+            max-width: 80%;
+            max-height: 80%;
+            opacity: 0.85;
+        }
+        
+        .visualization-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .visualization-desc {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .visualization-note {
+            background: var(--gray-100);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem;
+            border-radius: 0 6px 6px 0;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Module 3: Segmentation</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#clustering-concepts" class="toc-link active">Clustering Concepts</a></li>
+                <li class="toc-item"><a href="#hierarchical" class="toc-link">Hierarchical Clustering</a></li>
+                <li class="toc-item"><a href="#kmeans" class="toc-link">K-Means Clustering</a></li>
+                <li class="toc-item"><a href="#model-based" class="toc-link">Model-Based Clustering</a></li>
+                <li class="toc-item"><a href="positioning.html" class="toc-link">→ Next: Positioning</a></li>
+            </ul>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="setup.html">Module 2</a> / Module 3
+            </div>
+            
+            <header class="header">
+                <h1>Segmentation Analysis</h1>
+                <p class="subtitle">Implement cluster analysis to identify homogeneous customer groups. Master hierarchical, k-means, and model-based clustering with business interpretation.</p>
+            </header>
+            
+            <section class="section" id="clustering-concepts">
+                <h2 class="section-title"><span>1</span> Core Clustering Concepts</h2>
+                
+                <div class="formula-box">
+                    <div><span class="math-comment"># Euclidean Distance Formula (Similarity Metric)</span></div>
+                    <div>d(<span class="math-var">i</span>, <span class="math-var">j</span>) = √[ Σ (<span class="math-var">x</span><span class="math-symbol">_ik</span> - <span class="math-var">x</span><span class="math-symbol">_jk</span>)<span class="math-symbol">²</span> ]</div>
+                    <div><span class="math-comment"># Where:</span></div>
+                    <div><span class="math-var">d</span>(<span class="math-var">i</span>,<span class="math-var">j</span>) = distance between observations <span class="math-var">i</span> and <span class="math-var">j</span></div>
+                    <div><span class="math-var">x</span><span class="math-symbol">_ik</span> = value of variable <span class="math-var">k</span> for observation <span class="math-var">i</span></div>
+                    <div><span class="math-var">x</span><span class="math-symbol">_jk</span> = value of variable <span class="math-var">k</span> for observation <span class="math-var">j</span></div>
+                    <div><span class="math-comment"># Critical: Variables MUST be standardized before distance calculation</span></div>
+                </div>
+                
+                <p>Three primary clustering methods are used in marketing analytics:</p>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Best For</th>
+                            <th>Strengths</th>
+                            <th>Limitations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="method-header">
+                            <td colspan="4">Hierarchical Clustering</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Approach</strong></td>
+                            <td>Exploratory analysis; small-to-medium datasets (&lt;500 obs)</td>
+                            <td>• No need to specify k upfront<br>• Dendrogram shows relationships<br>• Intuitive visualization</td>
+                            <td>• Computationally intensive<br>• Sensitive to outliers<br>• Hard to revise once built</td>
+                        </tr>
+                        <tr class="method-header">
+                            <td colspan="4">K-Means Clustering</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Approach</strong></td>
+                            <td>Large datasets; when k is known; production environments</td>
+                            <td>• Fast and efficient<br>• Simple implementation<br>• Good for spherical clusters</td>
+                            <td>• Must specify k in advance<br>• Sensitive to initial seeds<br>• Assumes spherical clusters</td>
+                        </tr>
+                        <tr class="method-header">
+                            <td colspan="4">Model-Based Clustering (Mclust)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Approach</strong></td>
+                            <td>Statistically rigorous analysis; when distribution assumptions hold</td>
+                            <td>• Automatic k selection (BIC)<br>• Probabilistic framework<br>• Handles missing data better</td>
+                            <td>• Assumes Gaussian distributions<br>• Slower computation<br>• Complex interpretation</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <section class="section" id="hierarchical">
+                <h2 class="section-title"><span>2</span> Hierarchical Clustering Implementation</h2>
+                <p>Hierarchical clustering builds a tree of clusters (dendrogram) by iteratively merging the closest pairs of observations or clusters.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">hierarchical_clustering.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Load and prepare segmentation data</span>
+seg.df <- <span class="function">read.csv</span>(<span class="string">"Data_Segmentation.csv"</span>, <span class="string">stringsAsFactors = TRUE</span>)
+
+<span class="comment"># Recode binary factors to numeric (0/1)</span>
+seg.df$gender <- <span class="function">ifelse</span>(seg.df$gender == <span class="string">"Male"</span>, <span class="number">0</span>, <span class="number">1</span>)
+seg.df$ownHome <- <span class="function">ifelse</span>(seg.df$ownHome == <span class="string">"ownNo"</span>, <span class="number">0</span>, <span class="number">1</span>)
+seg.df$subscribe <- <span class="function">ifelse</span>(seg.df$subscribe == <span class="string">"subNo"</span>, <span class="number">0</span>, <span class="number">1</span>)
+
+<span class="comment"># Standardize continuous variables ONLY</span>
+seg.df.sc <- seg.df
+seg.df.sc[, <span class="function">c</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>)] <- <span class="function">scale</span>(seg.df[, <span class="function">c</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>)])  <span class="comment"># age, income, kids</span>
+
+<span class="comment"># Compute Euclidean distance matrix</span>
+seg.dist <- <span class="function">dist</span>(seg.df.sc, <span class="string">method = "euclidean"</span>)
+
+<span class="comment"># Perform hierarchical clustering (complete linkage)</span>
+seg.hc <- <span class="function">hclust</span>(seg.dist, <span class="string">method = "complete"</span>)
+
+<span class="comment"># Cut tree to get 4 clusters</span>
+seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="string">k = 4</span>)
+
+<span class="comment"># Visualize dendrogram with cluster rectangles</span>
+<span class="function">plot</span>(seg.hc, <span class="string">main = "Hierarchical Clustering Dendrogram"</span>, 
+     <span class="string">xlab = ""</span>, <span class="string">sub = ""</span>, <span class="string">cex = 0.6</span>)
+<span class="function">rect.hclust</span>(seg.hc, <span class="string">k = 4</span>, <span class="string">border = "red"</span>)
+
+<span class="comment"># Visualize clusters in 2D space</span>
+<span class="function">library</span>(<span class="string">cluster</span>)
+<span class="function">clusplot</span>(seg.df, seg.hc.segment, 
+        <span class="string">color = TRUE</span>, <span class="string">shade = TRUE</span>, <span class="string">labels = 4</span>, <span class="string">lines = 0</span>,
+        <span class="string">main = "Customer Segments (Hierarchical)"</span>,
+        <span class="string">xlab = "Component 1"</span>, <span class="string">ylab = "Component 2"</span>)
+
+<span class="comment"># Profile clusters (business interpretation)</span>
+<span class="function">aggregate</span>(seg.df, <span class="function">list</span>(<span class="string">Cluster = seg.hc.segment</span>), <span class="function">mean</span>)</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="400" height="300" viewBox="0 0 400 300">
+                            <path d="M40,250 L60,200 L80,220 L100,180 L120,190 L140,150 L160,160 L180,120 L200,130 L220,90 L240,100 L260,70 L280,80 L300,50 L320,60 L340,40 L360,260" 
+                                  fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+                            <path d="M40,250 L60,230 L80,240 L100,220 L120,230 L140,210 L160,220 L180,200 L200,210 L220,190 L240,200 L260,180 L280,190 L300,170 L320,180 L340,160 L360,260" 
+                                  fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-dasharray="5,5"/>
+                            <rect x="85" y="30" width="60" height="25" rx="4" fill="#ef4444" opacity="0.85"/>
+                            <rect x="165" y="45" width="60" height="25" rx="4" fill="#f59e0b" opacity="0.85"/>
+                            <rect x="245" y="60" width="60" height="25" rx="4" fill="#10b981" opacity="0.85"/>
+                            <text x="115" y="48" text-anchor="middle" fill="white" font-weight="600" font-size="12">k=4</text>
+                            <text x="195" y="63" text-anchor="middle" fill="white" font-weight="600" font-size="12">k=3</text>
+                            <text x="275" y="78" text-anchor="middle" fill="white" font-weight="600" font-size="12">k=2</text>
+                            <text x="200" y="290" text-anchor="middle" fill="#1e293b" font-weight="600">Height (Distance)</text>
+                            <text x="20" y="150" text-anchor="middle" fill="#1e293b" font-weight="600" transform="rotate(-90, 20, 150)">Observations</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Hierarchical Clustering Dendrogram</div>
+                    <div class="visualization-desc">The dendrogram shows how observations merge into clusters. The height represents the distance at which clusters merge. Cutting the tree at different heights yields different numbers of clusters (k=2,3,4 shown).</div>
+                </div>
+            </section>
+            
+            <section class="section" id="kmeans">
+                <h2 class="section-title"><span>3</span> K-Means Clustering Implementation</h2>
+                <p>K-means partitions observations into k pre-specified clusters by minimizing within-cluster variance.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">kmeans_clustering.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Determine optimal k using elbow method</span>
+<span class="function">set.seed</span>(<span class="number">96743</span>)  <span class="comment"># For reproducibility</span>
+wss <- <span class="function">numeric</span>(<span class="number">10</span>)
+
+<span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) {
+  km <- <span class="function">kmeans</span>(seg.df.sc, <span class="string">centers = i</span>, <span class="string">nstart = 25</span>)
+  wss[i] <- km$tot.withinss
+}
+
+<span class="comment"># Plot elbow curve</span>
+<span class="function">plot</span>(<span class="number">1</span>:<span class="number">10</span>, wss, <span class="string">type = "b"</span>, <span class="string">pch = 19</span>,
+     <span class="string">xlab = "Number of Clusters (k)"</span>, 
+     <span class="string">ylab = "Within-Cluster Sum of Squares"</span>,
+     <span class="string">main = "K-Means Elbow Method"</span>)
+<span class="function">abline</span>(<span class="string">v = 4</span>, <span class="string">col = "red"</span>, <span class="string">lty = 2</span>)  <span class="comment"># Suggested k=4</span>
+
+<span class="comment"># Run k-means with optimal k</span>
+seg.k <- <span class="function">kmeans</span>(seg.df.sc, <span class="string">centers = 4</span>, <span class="string">nstart = 25</span>)
+
+<span class="comment"># Visualize clusters</span>
+<span class="function">clusplot</span>(seg.df, seg.k$cluster,
+        <span class="string">color = TRUE</span>, <span class="string">shade = TRUE</span>, <span class="string">labels = 4</span>, <span class="string">lines = 0</span>,
+        <span class="string">main = "Customer Segments (K-Means)"</span>,
+        <span class="string">xlab = "Component 1"</span>, <span class="string">ylab = "Component 2"</span>)
+
+<span class="comment"># Profile clusters</span>
+<span class="function">aggregate</span>(seg.df, <span class="function">list</span>(<span class="string">Cluster = seg.k$cluster</span>), <span class="function">mean</span>)</pre>
+                </div>
+            </section>
+            
+            <section class="section" id="model-based">
+                <h2 class="section-title"><span>4</span> Model-Based Clustering (Mclust)</h2>
+                <p>Mclust uses statistical models to identify clusters with different shapes, volumes, and orientations, automatically selecting the optimal number of clusters using Bayesian Information Criterion (BIC).</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">mclust_clustering.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="function">library</span>(<span class="string">mclust</span>)
+
+<span class="comment"># Run Mclust (automatically selects optimal k)</span>
+seg.mc <- <span class="function">Mclust</span>(seg.df.sc)
+
+<span class="comment"># View model summary and optimal clusters</span>
+<span class="function">summary</span>(seg.mc)
+<span class="comment"># Output shows: optimal clusters (G), model type, BIC value</span>
+
+<span class="comment"># Visualize BIC values for different cluster solutions</span>
+<span class="function">plot</span>(seg.mc, <span class="string">what = "BIC"</span>, <span class="string">main = "Mclust: BIC for Cluster Solutions"</span>)
+
+<span class="comment"># Visualize clusters</span>
+<span class="function">clusplot</span>(seg.df, seg.mc$classification,
+        <span class="string">color = TRUE</span>, <span class="string">shade = TRUE</span>, <span class="string">labels = seg.mc$G</span>, <span class="string">lines = 0</span>,
+        <span class="string">main = paste("Model-Based Clustering (k =", seg.mc$G, ")"</span>,
+        <span class="string">xlab = "Component 1"</span>, <span class="string">ylab = "Component 2"</span>)
+
+<span class="comment"># Profile clusters</span>
+<span class="function">aggregate</span>(seg.df, <span class="function">list</span>(<span class="string">Cluster = seg.mc$classification</span>), <span class="function">mean</span>)</pre>
+                </div>
+                
+                <div class="concept-card tip">
+                    <div class="concept-title">Interpretation Framework</div>
+                    <p>After clustering, always validate segments using:</p>
+                    <ul>
+                        <li><strong>ANOVA tests:</strong> Verify significant differences between clusters on key variables</li>
+                        <li><strong>Business relevance:</strong> Do segments align with strategic priorities?</li>
+                        <li><strong>Actionability:</strong> Can we reach and serve these segments effectively?</li>
+                        <li><strong>Stability:</strong> Do segments persist over time? (Validate with holdout sample)</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <div class="next-steps">
+                <a href="setup.html" class="nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Module 2
+                </a>
+                <a href="positioning.html" class="nav-btn next">
+                    Next Module: Positioning Analysis
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

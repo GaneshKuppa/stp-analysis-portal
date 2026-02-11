@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4. Positioning Analysis | STP Analysis in R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Same CSS as previous files - condensed for brevity */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            padding-left: 1rem;
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 2rem;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .section:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .section-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 1.125rem;
+        }
+        
+        .concept-card {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .concept-card.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+        
+        .concept-card.tip {
+            border-left-color: var(--success);
+            background: #ecfdf5;
+        }
+        
+        .concept-card.info {
+            border-left-color: var(--accent);
+            background: #ecfeff;
+        }
+        
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .concept-title::before {
+            content: "💡";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .warning .concept-title::before { content: "⚠️"; }
+        .tip .concept-title::before { content: "✅"; }
+        .info .concept-title::before { content: "ℹ️"; }
+        
+        h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--dark);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .formula-box {
+            background: var(--code-bg);
+            color: var(--code-text);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid var(--gray-700);
+        }
+        
+        .formula-box::before {
+            content: "Mathematical Foundation";
+            position: absolute;
+            top: -12px;
+            left: 12px;
+            background: var(--primary);
+            color: white;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .math-symbol {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .math-var {
+            color: #60a5fa;
+            font-style: italic;
+        }
+        
+        .math-comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .code-container {
+            margin: 1.75rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .code-header {
+            background: var(--dark-800);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .code-label {
+            display: flex;
+            align-items: center;
+        }
+        
+        .code-label::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff5f57;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gray-100);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: var(--dark);
+        }
+        
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.5rem;
+            border-radius: 0 0 12px 12px;
+            margin: 0;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .comment { color: #94a3b8; }
+        .function { color: #60a5fa; }
+        .string { color: #fbbf24; }
+        .number { color: #10b981; }
+        .keyword { color: #f87171; }
+        .operator { color: #93c5fd; }
+        
+        .visualization-container {
+            background: white;
+            border: 1px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1.75rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            height: 300px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder svg {
+            max-width: 80%;
+            max-height: 80%;
+            opacity: 0.85;
+        }
+        
+        .visualization-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .visualization-desc {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .key-takeaways {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .key-takeaways h3 {
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .key-takeaways h3::before {
+            content: "🔑";
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 1.75rem;
+        }
+        
+        .key-takeaways li {
+            margin-bottom: 0.625rem;
+            line-height: 1.6;
+        }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Module 4: Positioning</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#factor-foundations" class="toc-link active">Factor Analysis Foundations</a></li>
+                <li class="toc-item"><a href="#correlation-analysis" class="toc-link">Correlation Analysis</a></li>
+                <li class="toc-item"><a href="#pca" class="toc-link">Principal Component Analysis</a></li>
+                <li class="toc-item"><a href="#factor-implementation" class="toc-link">Factor Analysis Implementation</a></li>
+                <li class="toc-item"><a href="#perceptual-maps" class="toc-link">Perceptual Maps</a></li>
+                <li class="toc-item"><a href="integrated-workflow.html" class="toc-link">→ Next: Integrated Workflow</a></li>
+            </ul>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="segmentation.html">Module 3</a> / Module 4
+            </div>
+            
+            <header class="header">
+                <h1>Positioning Analysis</h1>
+                <p class="subtitle">Transform complex attribute data into actionable insights using factor analysis and perceptual mapping. Learn mathematical foundations and strategic interpretation.</p>
+            </header>
+            
+            <section class="section" id="factor-foundations">
+                <h2 class="section-title"><span>1</span> Factor Analysis: Mathematical Foundations</h2>
+                
+                <div class="formula-box">
+                    <div><span class="math-comment"># Factor Model Equation</span></div>
+                    <div><span class="math-var">X</span><span class="math-symbol">_i</span> = λ<span class="math-symbol">_i1</span>·<span class="math-var">F</span><span class="math-symbol">_1</span> + λ<span class="math-symbol">_i2</span>·<span class="math-var">F</span><span class="math-symbol">_2</span> + ... + λ<span class="math-symbol">_ik</span>·<span class="math-var">F</span><span class="math-symbol">_k</span> + ε<span class="math-symbol">_i</span></div>
+                    <div><span class="math-comment"># Where:</span></div>
+                    <div><span class="math-var">X</span><span class="math-symbol">_i</span> = Observed variable <span class="math-var">i</span> (e.g., "performance" rating)</div>
+                    <div>λ<span class="math-symbol">_ik</span> = Factor loading (correlation between variable <span class="math-var">i</span> and factor <span class="math-var">k</span>)</div>
+                    <div><span class="math-var">F</span><span class="math-symbol">_k</span> = Latent factor <span class="math-var">k</span> (unobserved construct)</div>
+                    <div>ε<span class="math-symbol">_i</span> = Unique error term for variable <span class="math-var">i</span></div>
+                    <div></div>
+                    <div><span class="math-comment"># Communality (variance explained by common factors)</span></div>
+                    <div>h²<span class="math-symbol">_i</span> = λ<span class="math-symbol">_i1</span>² + λ<span class="math-symbol">_i2</span>² + ... + λ<span class="math-symbol">_ik</span>²</div>
+                    <div></div>
+                    <div><span class="math-comment"># Eigenvalue (total variance explained by factor k)</span></div>
+                    <div>Eigenvalue<span class="math-symbol">_k</span> = Σ(λ<span class="math-symbol">_ik</span>²) for all variables <span class="math-var">i</span></div>
+                </div>
+            </section>
+            
+            <section class="section" id="correlation-analysis">
+                <h2 class="section-title"><span>2</span> Correlation Analysis</h2>
+                <p>Correlation matrices reveal relationships between attributes before factor extraction. Highly correlated attributes likely load on the same factor.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">correlation_analysis.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Load brand rating data</span>
+brand.ratings <- <span class="function">read.csv</span>(<span class="string">"Data_Factor_Analysis.csv"</span>, <span class="string">stringsAsFactors = TRUE</span>)
+
+<span class="comment"># Standardize all rating variables (critical step!)</span>
+brand.sc <- brand.ratings
+brand.sc[, <span class="number">1</span>:<span class="number">9</span>] <- <span class="function">scale</span>(brand.ratings[, <span class="number">1</span>:<span class="number">9</span>])
+
+<span class="comment"># Compute correlation matrix</span>
+cor_matrix <- <span class="function">cor</span>(brand.sc[, <span class="number">1</span>:<span class="number">9</span>])
+
+<span class="comment"># Visualize correlation structure</span>
+<span class="function">corrplot</span>(cor_matrix, 
+        <span class="string">method = "color"</span>, 
+        <span class="string">type = "upper"</span>, 
+        <span class="string">order = "hclust"</span>,
+        <span class="string">tl.cex = 0.8</span>,
+        <span class="string">tl.col = "black"</span>,
+        <span class="string">title = "Attribute Correlation Matrix"</span>,
+        <span class="string">mar = c(0, 0, 2, 0)</span>)
+
+<span class="comment"># Identify highly correlated attribute pairs</span>
+<span class="function">findCorrelation</span>(cor_matrix, <span class="string">cutoff = 0.7</span>)</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="350" height="350" viewBox="0 0 350 350">
+                            <rect x="40" y="40" width="30" height="30" fill="#ef4444" opacity="0.9"/>
+                            <rect x="75" y="40" width="30" height="30" fill="#f97316" opacity="0.8"/>
+                            <rect x="110" y="40" width="30" height="30" fill="#fbbf24" opacity="0.7"/>
+                            <rect x="145" y="40" width="30" height="30" fill="#a3e635" opacity="0.6"/>
+                            <rect x="180" y="40" width="30" height="30" fill="#34d399" opacity="0.7"/>
+                            <rect x="215" y="40" width="30" height="30" fill="#38bdf8" opacity="0.8"/>
+                            <rect x="250" y="40" width="30" height="30" fill="#8b5cf6" opacity="0.9"/>
+                            
+                            <rect x="40" y="75" width="30" height="30" fill="#f97316" opacity="0.8"/>
+                            <rect x="75" y="75" width="30" height="30" fill="#ef4444" opacity="0.95"/>
+                            <rect x="110" y="75" width="30" height="30" fill="#f59e0b" opacity="0.75"/>
+                            <rect x="145" y="75" width="30" height="30" fill="#4ade80" opacity="0.65"/>
+                            <rect x="180" y="75" width="30" height="30" fill="#22d3ee" opacity="0.7"/>
+                            <rect x="215" y="75" width="30" height="30" fill="#60a5fa" opacity="0.85"/>
+                            <rect x="250" y="75" width="30" height="30" fill="#a78bfa" opacity="0.9"/>
+                            
+                            <text x="200" y="20" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Correlation Heatmap</text>
+                            <text x="20" y="150" text-anchor="start" fill="#1e293b" font-weight="500" transform="rotate(-90, 20, 150)">Attributes</text>
+                            <text x="180" y="330" text-anchor="middle" fill="#1e293b" font-weight="500">Attributes</text>
+                            
+                            <rect x="40" y="280" width="20" height="20" fill="#ef4444"/>
+                            <rect x="40" y="305" width="20" height="20" fill="#38bdf8"/>
+                            <text x="65" y="295" text-anchor="start" fill="#1e293b" font-size="10">r = -0.85</text>
+                            <text x="65" y="320" text-anchor="start" fill="#1e293b" font-size="10">r = 0.85</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Attribute Correlation Heatmap</div>
+                    <div class="visualization-desc">Colors represent correlation strength between attributes. Red = strong negative correlation, Blue = strong positive correlation. Clusters of similar colors reveal attribute groups that may form underlying factors.</div>
+                </div>
+            </section>
+            
+            <section class="section" id="pca">
+                <h2 class="section-title"><span>3</span> Principal Component Analysis (PCA)</h2>
+                <p>PCA reduces dimensionality by transforming correlated variables into uncorrelated principal components that capture maximum variance.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">pca_analysis.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Aggregate to brand level (critical for perceptual maps!)</span>
+brand.mean <- <span class="function">aggregate</span>(. ~ brand, <span class="string">data = brand.sc</span>, <span class="function">mean</span>)
+<span class="function">rownames</span>(brand.mean) <- brand.mean$brand
+brand.mean$brand <- <span class="keyword">NULL</span>
+
+<span class="comment"># Perform PCA using correlation matrix</span>
+brand.pc <- <span class="function">princomp</span>(brand.mean, <span class="string">cor = TRUE</span>)
+
+<span class="comment"># Scree plot to determine components</span>
+<span class="function">plot</span>(brand.pc, <span class="string">type = "l"</span>, <span class="string">main = "PCA Scree Plot"</span>,
+     <span class="string">xlab = "Principal Component"</span>, <span class="string">ylab = "Variance Explained"</span>)
+<span class="function">abline</span>(<span class="string">v = 2.5</span>, <span class="string">col = "red"</span>, <span class="string">lty = 2</span>)
+
+<span class="comment"># View component loadings (attribute contributions)</span>
+<span class="function">loadings</span>(brand.pc)
+
+<span class="comment"># Create perceptual map (biplot)</span>
+<span class="function">biplot</span>(brand.pc, 
+       <span class="string">main = "Brand Positioning Perceptual Map"</span>,
+       <span class="string">xlabs = rownames</span>(brand.mean),
+       <span class="string">col = c("darkblue", "darkred")</span>)</pre>
+                </div>
+            </section>
+            
+            <section class="section" id="factor-implementation">
+                <h2 class="section-title"><span>4</span> Factor Analysis Implementation</h2>
+                <p>Factor analysis identifies latent constructs (factors) that explain correlations among observed variables. Rotation (Varimax) simplifies interpretation.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">factor_analysis.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Determine optimal number of factors</span>
+fa_scree <- <span class="function">nScree</span>(brand.mean)
+<span class="function">plot</span>(fa_scree$Analysis$Eigenvalues, <span class="string">type = "b"</span>, <span class="string">pch = 19</span>,
+     <span class="string">xlab = "Factor Number"</span>, <span class="string">ylab = "Eigenvalue"</span>,
+     <span class="string">main = "Factor Analysis: Scree Plot"</span>)
+<span class="function">abline</span>(<span class="string">h = 1</span>, <span class="string">col = "red"</span>, <span class="string">lty = 2</span>)  <span class="comment"># Kaiser criterion</span>
+
+<span class="comment"># Perform factor analysis with Varimax rotation</span>
+brand.fa <- <span class="function">factanal</span>(brand.mean, 
+                       <span class="string">factors = 2</span>, 
+                       <span class="string">rotation = "varimax"</span>, 
+                       <span class="string">scores = "regression"</span>)
+
+<span class="comment"># Extract and interpret factor loadings</span>
+loadings_df <- <span class="function">as.data.frame</span>(<span class="function">unclass</span>(brand.fa$loadings[, <span class="number">1</span>:<span class="number">2</span>]))
+<span class="function">print</span>(<span class="function">round</span>(loadings_df, <span class="number">3</span>))
+
+<span class="comment"># Calculate communalities (variance explained per attribute)</span>
+communalities <- <span class="function">rowSums</span>(loadings_df^<span class="number">2</span>)
+<span class="function">cbind</span>(<span class="string">Loadings = loadings_df</span>, <span class="string">Communality = round</span>(communalities, <span class="number">3</span>))
+
+<span class="comment"># Extract brand positions (factor scores)</span>
+brand.scores <- brand.fa$scores
+<span class="function">print</span>(<span class="function">round</span>(brand.scores, <span class="number">3</span>))</pre>
+                </div>
+                
+                <div class="concept-card">
+                    <div class="concept-title">Rotation Methods Explained</div>
+                    <p><strong>Why rotate?</strong> Initial factor solutions often have complex structure (many variables loading moderately on multiple factors). Rotation simplifies interpretation by maximizing high loadings and minimizing low loadings.</p>
+                    <p><strong>Varimax rotation:</strong> Orthogonal rotation that maximizes variance of squared loadings within each factor. Creates "simple structure" where each variable loads strongly on only one factor.</p>
+                    <p><strong>Interpretation rule:</strong> |λ| ≥ 0.70 = strong loading; |λ| 0.40-0.69 = moderate; |λ| &lt; 0.30 = negligible (consider dropping)</p>
+                </div>
+            </section>
+            
+            <section class="section" id="perceptual-maps">
+                <h2 class="section-title"><span>5</span> Creating Professional Perceptual Maps</h2>
+                <p>Perceptual maps visualize brand positions relative to competitors and attribute directions. This reveals positioning opportunities and competitive threats.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">perceptual_map.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="function">library</span>(<span class="string">ggplot2</span>)
+
+<span class="comment"># Prepare data for plotting</span>
+brand_positions <- <span class="function">as.data.frame</span>(brand.scores)
+brand_positions$brand <- <span class="function">rownames</span>(brand_positions)
+
+attribute_vectors <- <span class="function">as.data.frame</span>(<span class="function">unclass</span>(brand.fa$loadings[, <span class="number">1</span>:<span class="number">2</span>]))
+attribute_vectors$attribute <- <span class="function">rownames</span>(attribute_vectors)
+
+<span class="comment"># Calculate variance explained</span>
+var_explained <- <span class="function">summary</span>(brand.pc)$importance[<span class="number">2</span>, <span class="number">1</span>:<span class="number">2</span>] * <span class="number">100</span>
+
+<span class="comment"># Create professional perceptual map</span>
+ggplot() +
+  <span class="comment"># Brand points</span>
+  <span class="function">geom_point</span>(<span class="string">data = brand_positions</span>, 
+            <span class="function">aes</span>(<span class="string">x = Factor1</span>, <span class="string">y = Factor2</span>, <span class="string">color = brand</span>), 
+            <span class="string">size = 4</span>, <span class="string">alpha = 0.85</span>) +
+  <span class="function">geom_text</span>(<span class="string">data = brand_positions</span>, 
+           <span class="function">aes</span>(<span class="string">x = Factor1</span>, <span class="string">y = Factor2</span>, <span class="string">label = brand</span>), 
+           <span class="string">hjust = "left"</span>, <span class="string">vjust = "bottom"</span>, <span class="string">size = 5</span>, <span class="string">fontface = "bold"</span>) +
+  
+  <span class="comment"># Attribute vectors</span>
+  <span class="function">geom_segment</span>(<span class="string">data = attribute_vectors</span>, 
+             <span class="function">aes</span>(<span class="string">x = 0</span>, <span class="string">y = 0</span>, 
+                 <span class="string">xend = Factor1 * 2.5</span>, <span class="string">yend = Factor2 * 2.5</span>),
+             <span class="string">arrow = arrow</span>(<span class="string">length = unit</span>(<span class="number">0.2</span>, <span class="string">"cm"</span>)), 
+             <span class="string">color = "darkblue"</span>, <span class="string">size = 1.2</span>) +
+  <span class="function">geom_text</span>(<span class="string">data = attribute_vectors</span>, 
+           <span class="function">aes</span>(<span class="string">x = Factor1 * 2.7</span>, <span class="string">y = Factor2 * 2.7</span>, <span class="string">label = attribute</span>),
+           <span class="string">color = "darkblue"</span>, <span class="string">size = 4</span>, <span class="string">fontface = "italic"</span>) +
+  
+  <span class="comment"># Quadrant lines</span>
+  <span class="function">geom_vline</span>(<span class="string">xintercept = 0</span>, <span class="string">linetype = "dashed"</span>, <span class="string">color = "gray50"</span>) +
+  <span class="function">geom_hline</span>(<span class="string">yintercept = 0</span>, <span class="string">linetype = "dashed"</span>, <span class="string">color = "gray50"</span>) +
+  
+  <span class="comment"># Labels and theme</span>
+  <span class="function">labs</span>(<span class="string">title = "Coffee Brand Perceptual Map"</span>,
+       <span class="string">subtitle = sprintf</span>(<span class="string">"Based on Factor Analysis (Total variance: %.1f%%)"</span>, 
+                         <span class="function">sum</span>(var_explained)),
+       <span class="string">x = sprintf</span>(<span class="string">"Factor 1: Product Leadership (%.1f%%)"</span>, var_explained[<span class="number">1</span>]),
+       <span class="string">y = sprintf</span>(<span class="string">"Factor 2: Value Orientation (%.1f%%)"</span>, var_explained[<span class="number">2</span>])) +
+  <span class="function">theme_minimal</span>(<span class="string">base_size = 14</span>) +
+  <span class="function">theme</span>(<span class="string">legend.position = "none"</span>,
+        <span class="string">plot.title = element_text</span>(<span class="string">hjust = 0.5</span>, <span class="string">face = "bold"</span>, <span class="string">size = 16</span>),
+        <span class="string">plot.subtitle = element_text</span>(<span class="string">hjust = 0.5</span>))</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="400" height="400" viewBox="0 0 400 400">
+                            <line x1="200" y1="50" x2="200" y2="350" stroke="#94a3b8" stroke-dasharray="5,5" stroke-width="1.5"/>
+                            <line x1="50" y1="200" x2="350" y2="200" stroke="#94a3b8" stroke-dasharray="5,5" stroke-width="1.5"/>
+                            
+                            <circle cx="280" cy="120" r="12" fill="#3b82f6" opacity="0.85"/>
+                            <circle cx="320" cy="150" r="12" fill="#60a5fa" opacity="0.85"/>
+                            <circle cx="120" cy="280" r="12" fill="#8b5cf6" opacity="0.85"/>
+                            <circle cx="150" cy="320" r="12" fill="#a78bfa" opacity="0.85"/>
+                            <circle cx="250" cy="250" r="12" fill="#f43f5e" opacity="0.85"/>
+                            
+                            <text x="285" y="115" fill="#1e293b" font-weight="700" font-size="14">b</text>
+                            <text x="325" y="145" fill="#1e293b" font-weight="700" font-size="14">c</text>
+                            <text x="125" y="275" fill="#1e293b" font-weight="700" font-size="14">f</text>
+                            <text x="155" y="315" fill="#1e293b" font-weight="700" font-size="14">g</text>
+                            <text x="255" y="245" fill="#1e293b" font-weight="700" font-size="14">e</text>
+                            
+                            <line x1="200" y1="200" x2="260" y2="140" stroke="#dc2626" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            <line x1="200" y1="200" x2="140" y2="260" stroke="#dc2626" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            <line x1="200" y1="200" x2="240" y2="240" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)"/>
+                            
+                            <text x="270" y="130" fill="#dc2626" font-style="italic" font-size="11">perform</text>
+                            <text x="130" y="270" fill="#dc2626" font-style="italic" font-size="11">value</text>
+                            <text x="250" y="250" fill="#0ea5e9" font-style="italic" font-size="11">fun</text>
+                            
+                            <text x="300" y="90" fill="#1e293b" font-weight="600" font-size="12">Premium Leaders</text>
+                            <text x="100" y="330" fill="#1e293b" font-weight="600" font-size="12">Value Brands</text>
+                            <text x="250" y="270" fill="#1e293b" font-weight="600" font-size="12">Undifferentiated</text>
+                            
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Professional Perceptual Map</div>
+                    <div class="visualization-desc">Brands positioned in 2D space defined by underlying factors. Attribute vectors show direction of perceptions. Empty quadrants reveal positioning opportunities. Brand e (center) lacks differentiation.</div>
+                    <div class="visualization-note">💡 Strategic insight: Brands b and c dominate "Premium Leaders" quadrant. Brands f and g own "Value Brands" space. Upper-right quadrant represents untapped "Premium Value" opportunity.</div>
+                </div>
+                
+                <div class="key-takeaways">
+                    <h3>Perceptual Map Interpretation Framework</h3>
+                    <ul>
+                        <li><strong>Identify empty spaces:</strong> Gaps between brands represent unmet market needs and positioning opportunities</li>
+                        <li><strong>Assess competitive proximity:</strong> Brands close together compete directly for the same customers</li>
+                        <li><strong>Evaluate brand distinctiveness:</strong> Central brands lack differentiation; peripheral brands are distinctive</li>
+                        <li><strong>Map attribute directions:</strong> Shows what drives perceptions along each dimension</li>
+                        <li><strong>Strategic implications:</strong> Move brand toward desirable attributes; target underserved quadrants; differentiate from closest competitors</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <div class="next-steps">
+                <a href="segmentation.html" class="nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Module 3
+                </a>
+                <a href="integrated-workflow.html" class="nav-btn next">
+                    Next Module: Integrated STP Workflow
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

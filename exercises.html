@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6. Practical Exercises | STP Analysis in R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Same CSS as previous files - condensed for brevity */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            padding-left: 1rem;
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 2rem;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .section:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .section-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 1.125rem;
+        }
+        
+        .concept-card {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .concept-card.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+        
+        .concept-card.tip {
+            border-left-color: var(--success);
+            background: #ecfdf5;
+        }
+        
+        .concept-card.info {
+            border-left-color: var(--accent);
+            background: #ecfeff;
+        }
+        
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .concept-title::before {
+            content: "💡";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .warning .concept-title::before { content: "⚠️"; }
+        .tip .concept-title::before { content: "✅"; }
+        .info .concept-title::before { content: "ℹ️"; }
+        
+        h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--dark);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .code-container {
+            margin: 1.75rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .code-header {
+            background: var(--dark-800);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .code-label {
+            display: flex;
+            align-items: center;
+        }
+        
+        .code-label::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff5f57;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gray-100);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: var(--dark);
+        }
+        
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.5rem;
+            border-radius: 0 0 12px 12px;
+            margin: 0;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .comment { color: #94a3b8; }
+        .function { color: #60a5fa; }
+        .string { color: #fbbf24; }
+        .number { color: #10b981; }
+        .keyword { color: #f87171; }
+        .operator { color: #93c5fd; }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--dark-800), var(--dark-900));
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: var(--gray-50);
+        }
+        
+        .comparison-table tr:hover td {
+            background-color: #dbeafe;
+        }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Module 6: Exercises</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#segmentation-exercise" class="toc-link active">Segment Validation</a></li>
+                <li class="toc-item"><a href="#positioning-exercise" class="toc-link">Positioning Gap Analysis</a></li>
+                <li class="toc-item"><a href="#debugging" class="toc-link">Debugging Guide</a></li>
+                <li class="toc-item"><a href="master-program.html" class="toc-link">→ Next: Master Program</a></li>
+            </ul>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="integrated-workflow.html">Module 5</a> / Module 6
+            </div>
+            
+            <header class="header">
+                <h1>Practical Exercises</h1>
+                <p class="subtitle">Apply your knowledge with hands-on exercises. Validate segments, identify positioning gaps, and master debugging techniques for common R errors.</p>
+            </header>
+            
+            <section class="section" id="segmentation-exercise">
+                <h2 class="section-title"><span>1</span> Segment Validation Exercise</h2>
+                <p>Validate that your clusters are statistically meaningful and business-relevant.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">segment_validation.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Load required libraries</span>
+<span class="function">library</span>(<span class="string">dplyr</span>)
+
+<span class="comment"># TASK 1: Statistical validation using ANOVA</span>
+<span class="comment"># Test if income differs significantly across clusters</span>
+seg.df$cluster <- seg.mc$classification  <span class="comment"># Using Mclust clusters</span>
+anova_result <- <span class="function">aov</span>(income ~ <span class="function">factor</span>(cluster), <span class="string">data = seg.df</span>)
+p_value <- <span class="function">summary</span>(anova_result)[[<span class="number">1</span>]][[<span class="string">"Pr(>F)"</span>]][<span class="number">1</span>]
+
+cat(<span class="string">"ANOVA p-value for income across clusters:"</span>, <span class="function">round</span>(p_value, <span class="number">4</span>), <span class="string">"\n"</span>)
+<span class="keyword">if</span> (p_value < <span class="number">0.05</span>) {
+  cat(<span class="string">"✅ Clusters show statistically significant income differences\n"</span>)
+} <span class="keyword">else</span> {
+  cat(<span class="string">"⚠️ Clusters do NOT show significant income differences\n"</span>)
+}
+
+<span class="comment"># TASK 2: Business relevance check</span>
+<span class="comment"># Calculate subscription rate difference between top and bottom segments</span>
+segment_subs <- seg.df %>%
+  <span class="function">group_by</span>(cluster) %>%
+  <span class="function">summarise</span>(sub_rate = <span class="function">mean</span>(subscribe) * <span class="number">100</span>) %>%
+  <span class="function">arrange</span>(<span class="function">desc</span>(sub_rate))
+
+top_segment_rate <- segment_subs$sub_rate[<span class="number">1</span>]
+bottom_segment_rate <- segment_subs$sub_rate[<span class="function">nrow</span>(segment_subs)]
+difference <- top_segment_rate - bottom_segment_rate
+
+cat(<span class="string">"\nSubscription rate difference between best and worst segments:"</span>, 
+    <span class="function">round</span>(difference, <span class="number">1</span>), <span class="string">"%\n"</span>)
+<span class="keyword">if</span> (difference > <span class="number">25</span>) {
+  cat(<span class="string">"✅ Segments show strong business differentiation\n"</span>)
+} <span class="keyword">else</span> {
+  cat(<span class="string">"⚠️ Segments may not be sufficiently differentiated for targeting\n"</span>)
+}
+
+<span class="comment"># TASK 3: Create segment profile visualization</span>
+<span class="function">library</span>(<span class="string">ggplot2</span>)
+
+segment_profiles_long <- segment_profiles %>%
+  <span class="function">select</span>(segment, avg_income, subscribe_rate) %>%
+  <span class="function">pivot_longer</span>(<span class="string">cols = c(avg_income, subscribe_rate)</span>,
+                 <span class="string">names_to = "metric"</span>, <span class="string">values_to = "value"</span>)
+
+ggplot(segment_profiles_long, <span class="function">aes</span>(<span class="string">x = factor(segment)</span>, <span class="string">y = value</span>, <span class="string">fill = metric</span>)) +
+  <span class="function">geom_col</span>(<span class="string">position = "dodge"</span>, <span class="string">width = 0.7</span>) +
+  <span class="function">labs</span>(<span class="string">title = "Customer Segment Profiles"</span>,
+       <span class="string">x = "Segment"</span>, <span class="string">y = "Value"</span>,
+       <span class="string">caption = "Primary target: Segment with highest subscription rate"</span>) +
+  <span class="function">theme_minimal</span>(<span class="string">base_size = 14</span>) +
+  <span class="function">theme</span>(<span class="string">legend.position = "top"</span>)</pre>
+                </div>
+            </section>
+            
+            <section class="section" id="positioning-exercise">
+                <h2 class="section-title"><span>2</span> Positioning Gap Analysis Exercise</h2>
+                <p>Identify the largest empty space in the perceptual map for strategic opportunity.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">positioning_gap_analysis.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Load brand scores from factor analysis</span>
+brand_positions <- <span class="function">as.data.frame</span>(brand.scores)
+
+<span class="comment"># TASK 1: Calculate centroid of all brands</span>
+centroid <- <span class="function">colMeans</span>(brand_positions[, <span class="number">1</span>:<span class="number">2</span>])
+
+<span class="comment"># TASK 2: Find most distinctive brand (farthest from centroid)</span>
+distances <- <span class="function">sqrt</span>(<span class="function">rowSums</span>((brand_positions[, <span class="number">1</span>:<span class="number">2</span>] - centroid)^<span class="number">2</span>))
+most_distinctive <- <span class="function">names</span>(<span class="function">which.max</span>(distances))
+max_distance <- <span class="function">max</span>(distances)
+
+cat(<span class="string">"Most distinctive brand:"</span>, most_distinctive, 
+    <span class="string">"(distance from center:"</span>, <span class="function">round</span>(max_distance, <span class="number">2</span>), <span class="string">")\n"</span>)
+
+<span class="comment"># TASK 3: Identify opposite quadrant (potential gap)</span>
+brand_pos <- brand_positions[most_distinctive, ]
+opposite_quadrant <- <span class="keyword">ifelse</span>(brand_pos[,<span class="number">1</span>] > <span class="number">0</span>, <span class="string">"left"</span>, <span class="string">"right"</span>)
+opposite_quadrant <- <span class="function">paste</span>(opposite_quadrant, 
+                            <span class="keyword">ifelse</span>(brand_pos[,<span class="number">2</span>] > <span class="number">0</span>, <span class="string">"bottom"</span>, <span class="string">"top"</span>))
+
+cat(<span class="string">"Potential positioning gap:"</span>, opposite_quadrant, <span class="string">"quadrant\n"</span>)
+
+<span class="comment"># TASK 4: Calculate ideal position for new brand in gap</span>
+<span class="comment"># (Midpoint between most distinctive brand and opposite corner)</span>
+opposite_corner <- <span class="function">c</span>(
+  <span class="keyword">ifelse</span>(brand_pos[,<span class="number">1</span>] > <span class="number">0</span>, <span class="number">-1</span>, <span class="number">1</span>) * <span class="number">2</span>,
+  <span class="keyword">ifelse</span>(brand_pos[,<span class="number">2</span>] > <span class="number">0</span>, <span class="number">-1</span>, <span class="number">1</span>) * <span class="number">2</span>
+)
+
+ideal_position <- (brand_pos[,<span class="number">1</span>:<span class="number">2</span>] + opposite_corner) / <span class="number">2</span>
+
+cat(<span class="string">"\nRecommended position for new brand:\n"</span>)
+cat(<span class="string">"  Factor 1 (Product Leadership):"</span>, <span class="function">round</span>(ideal_position[<span class="number">1</span>], <span class="number">2</span>), <span class="string">"\n"</span>)
+cat(<span class="string">"  Factor 2 (Value Orientation):"</span>, <span class="function">round</span>(ideal_position[<span class="number">2</span>], <span class="number">2</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># TASK 5: Determine attribute emphasis for new brand</span>
+<span class="comment"># (Attributes with strongest loadings in gap direction)</span>
+gap_direction <- <span class="function">sign</span>(ideal_position)
+relevant_attributes <- <span class="function">rownames</span>(<span class="function">subset</span>(loadings_df, 
+  (<span class="function">sign</span>(Factor1) == gap_direction[<span class="number">1</span>]) | 
+  (<span class="function">sign</span>(Factor2) == gap_direction[<span class="number">2</span>])))
+
+cat(<span class="string">"\nRecommended attribute emphasis:\n"</span>)
+<span class="keyword">for</span> (attr <span class="keyword">in</span> relevant_attributes) {
+  cat(<span class="string">"  -"</span>, attr, <span class="string">"\n"</span>)
+}</pre>
+                </div>
+            </section>
+            
+            <section class="section" id="debugging">
+                <h2 class="section-title"><span>3</span> Common Errors & Debugging Guide</h2>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Error Message</th>
+                            <th>Cause</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Error in dist(): non-numeric argument</code></td>
+                            <td>Factor variables not recoded to numeric before clustering</td>
+                            <td>Use <code>ifelse()</code> to convert factors to 0/1 before standardization</td>
+                        </tr>
+                        <tr>
+                            <td><code>Error: cannot allocate vector...</code></td>
+                            <td>Dataset too large for memory</td>
+                            <td>Use <code>kmeans()</code> instead of hierarchical; sample data; increase RAM</td>
+                        </tr>
+                        <tr>
+                            <td><code>All clusters have 1 observation</code></td>
+                            <td>k too large relative to N</td>
+                            <td>Reduce k; check scree plot/elbow method; verify data standardization</td>
+                        </tr>
+                        <tr>
+                            <td><code>Correlation matrix not positive definite</code></td>
+                            <td>Too many variables, too few observations; multicollinearity</td>
+                            <td>Remove highly correlated variables (>0.9); increase sample size; use PCA first</td>
+                        </tr>
+                        <tr>
+                            <td><code>Perceptual map looks random</code></td>
+                            <td>Forgot to aggregate to brand level before PCA/FA</td>
+                            <td>Use <code>aggregate(. ~ brand, data, mean)</code> before factor analysis</td>
+                        </tr>
+                        <tr>
+                            <td><code>NAs introduced by coercion</code></td>
+                            <td>Non-numeric characters in numeric columns</td>
+                            <td>Check data with <code>str()</code>; clean data; use <code>na.omit()</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="concept-card tip">
+                    <div class="concept-title">Debugging Workflow</div>
+                    <p>When errors occur, follow this systematic approach:</p>
+                    <ol>
+                        <li><strong>Read the error message carefully</strong> - R usually tells you exactly what's wrong</li>
+                        <li><strong>Check data structure</strong> with <code>str(your_data)</code> and <code>summary(your_data)</code></li>
+                        <li><strong>Verify variable types</strong> - factors vs. numeric vs. character</li>
+                        <li><strong>Check for missing values</strong> with <code>sum(is.na(your_data))</code></li>
+                        <li><strong>Test with small subset</strong> of data to isolate problem</li>
+                        <li><strong>Search error message</strong> online - someone has likely solved it before</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <div class="next-steps">
+                <a href="integrated-workflow.html" class="nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Module 5
+                </a>
+                <a href="master-program.html" class="nav-btn next">
+                    Next Module: Master Implementation
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

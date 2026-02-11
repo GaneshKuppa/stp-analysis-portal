@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Introduction to STP Framework | STP Analysis in R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            padding-left: 1rem;
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 2rem;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .section:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .section-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 1.125rem;
+        }
+        
+        .concept-card {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .concept-card.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+        
+        .concept-card.tip {
+            border-left-color: var(--success);
+            background: #ecfdf5;
+        }
+        
+        .concept-card.info {
+            border-left-color: var(--accent);
+            background: #ecfeff;
+        }
+        
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .concept-title::before {
+            content: "💡";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .warning .concept-title::before { content: "⚠️"; }
+        .tip .concept-title::before { content: "✅"; }
+        .info .concept-title::before { content: "ℹ️"; }
+        
+        h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--dark);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .visualization-container {
+            background: white;
+            border: 1px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            height: 300px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder svg {
+            max-width: 85%;
+            max-height: 85%;
+            opacity: 0.9;
+        }
+        
+        .visualization-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+        
+        .visualization-desc {
+            color: var(--gray-600);
+            font-size: 1.05rem;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .key-takeaways {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .key-takeaways h3 {
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            font-size: 1.625rem;
+        }
+        
+        .key-takeaways h3::before {
+            content: "🔑";
+            margin-right: 12px;
+            font-size: 1.75rem;
+        }
+        
+        .key-takeaways ul {
+            padding-left: 1.75rem;
+        }
+        
+        .key-takeaways li {
+            margin-bottom: 0.875rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .sun-care-example {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin: 2.5rem 0;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .example-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .example-title::before {
+            content: "☀️";
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+        
+        .segments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .segment-card {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .segment-card:nth-child(2) { border-left-color: var(--secondary); }
+        .segment-card:nth-child(3) { border-left-color: var(--accent); }
+        .segment-card:nth-child(4) { border-left-color: var(--success); }
+        .segment-card:nth-child(5) { border-left-color: var(--warning); }
+        
+        .segment-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+        
+        .segment-desc {
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Module 1: STP Framework</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#what-is-stp" class="toc-link active">What is STP?</a></li>
+                <li class="toc-item"><a href="#core-philosophy" class="toc-link">Core Philosophy</a></li>
+                <li class="toc-item"><a href="#sun-care-example" class="toc-link">Sun Care Market Example</a></li>
+                <li class="toc-item"><a href="#business-value" class="toc-link">Business Value</a></li>
+                <li class="toc-item"><a href="#key-takeaways" class="toc-link">Key Takeaways</a></li>
+                <li class="toc-item"><a href="setup.html" class="toc-link">→ Next: R Setup</a></li>
+            </ul>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / Module 1
+            </div>
+            
+            <header class="header">
+                <h1>Introduction to STP Framework</h1>
+                <p class="subtitle">Understanding how Segmentation, Targeting, and Positioning transform marketing from intuition-based to data-driven decision making.</p>
+            </header>
+            
+            <section class="section" id="what-is-stp">
+                <h2 class="section-title"><span>1</span> What Problem Does STP Solve?</h2>
+                <p>Markets are inherently <strong>heterogeneous</strong> — customers have different needs, preferences, behaviors, and willingness to pay. Without a systematic approach to managing this diversity, companies face critical challenges:</p>
+                
+                <div class="concept-card warning">
+                    <div class="concept-title">The Cost of Ignoring Heterogeneity</div>
+                    <ul>
+                        <li><strong>Wasted marketing resources:</strong> Targeting unprofitable customers with irrelevant messages</li>
+                        <li><strong>Brand dilution:</strong> Trying to be everything to everyone erodes brand identity</li>
+                        <li><strong>Competitive vulnerability:</strong> Undifferentiated offerings compete solely on price</li>
+                        <li><strong>Misaligned innovation:</strong> Product development disconnected from actual customer needs</li>
+                    </ul>
+                </div>
+                
+                <p>The STP framework provides a systematic methodology to transform heterogeneity from a challenge into a strategic advantage:</p>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="400" height="250" viewBox="0 0 400 250">
+                            <!-- Heterogeneous market -->
+                            <circle cx="80" cy="80" r="15" fill="#3b82f6" opacity="0.8"/>
+                            <circle cx="120" cy="60" r="12" fill="#8b5cf6" opacity="0.85"/>
+                            <circle cx="100" cy="110" r="18" fill="#0ea5e9" opacity="0.75"/>
+                            <circle cx="60" cy="140" r="14" fill="#10b981" opacity="0.8"/>
+                            <circle cx="140" cy="130" r="16" fill="#f59e0b" opacity="0.7"/>
+                            <circle cx="180" cy="90" r="13" fill="#ef4444" opacity="0.85"/>
+                            <circle cx="220" cy="120" r="17" fill="#ec4899" opacity="0.75"/>
+                            <circle cx="260" cy="70" r="15" fill="#6366f1" opacity="0.8"/>
+                            <circle cx="300" cy="100" r="14" fill="#8b5cf6" opacity="0.85"/>
+                            <circle cx="340" cy="130" r="16" fill="#38bdf8" opacity="0.75"/>
+                            
+                            <!-- Segmentation arrows -->
+                            <path d="M80 160 L80 180" stroke="#64748b" stroke-width="2" stroke-dasharray="5,3"/>
+                            <path d="M140 160 L140 180" stroke="#64748b" stroke-width="2" stroke-dasharray="5,3"/>
+                            <path d="M220 160 L220 180" stroke="#64748b" stroke-width="2" stroke-dasharray="5,3"/>
+                            <path d="M300 160 L300 180" stroke="#64748b" stroke-width="2" stroke-dasharray="5,3"/>
+                            
+                            <!-- Segments -->
+                            <rect x="40" y="190" width="80" height="40" rx="8" fill="#3b82f6" opacity="0.2"/>
+                            <rect x="120" y="190" width="80" height="40" rx="8" fill="#8b5cf6" opacity="0.2"/>
+                            <rect x="200" y="190" width="80" height="40" rx="8" fill="#0ea5e9" opacity="0.2"/>
+                            <rect x="280" y="190" width="80" height="40" rx="8" fill="#10b981" opacity="0.2"/>
+                            
+                            <text x="80" y="215" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Segment 1</text>
+                            <text x="160" y="215" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Segment 2</text>
+                            <text x="240" y="215" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Segment 3</text>
+                            <text x="320" y="215" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Segment 4</text>
+                            
+                            <text x="200" y="30" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="18">Heterogeneous Market</text>
+                            <text x="200" y="175" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="16">Segmentation</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">From Heterogeneity to Homogeneous Segments</div>
+                    <div class="visualization-desc">STP transforms a chaotic, heterogeneous market (top) into manageable homogeneous segments (bottom) where customers within groups share similar needs and behaviors.</div>
+                </div>
+            </section>
+            
+            <section class="section" id="core-philosophy">
+                <h2 class="section-title"><span>2</span> The STP Philosophy</h2>
+                
+                <div class="concept-card info">
+                    <div class="concept-title">Core Definition</div>
+                    <p><strong>Segmentation:</strong> Dividing the market into groups of similar customers where:</p>
+                    <ul>
+                        <li>Customers <em>within</em> a group have very similar needs</li>
+                        <li>Customers <em>across</em> groups have different needs</li>
+                    </ul>
+                    <p><strong>Targeting:</strong> Selecting the most attractive segments to serve based on market attractiveness and competitive strength.</p>
+                    <p><strong>Positioning:</strong> Creating a distinct perception in customers' minds relative to competitors through the marketing mix (product, price, place, promotion).</p>
+                </div>
+                
+                <h3>The Strategic Flow</h3>
+                <p>STP is sequential and cumulative:</p>
+                <ol>
+                    <li><strong>Segmentation informs targeting:</strong> You cannot intelligently select target segments without first understanding market structure</li>
+                    <li><strong>Targeting informs positioning:</strong> Your positioning strategy must resonate with the specific needs of your chosen target segment(s)</li>
+                    <li><strong>Positioning validates segmentation:</strong> Successful positioning confirms you've identified meaningful segments</li>
+                </ol>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="450" height="200" viewBox="0 0 450 200">
+                            <!-- Segmentation box -->
+                            <rect x="20" y="60" width="100" height="80" rx="12" fill="#3b82f6" opacity="0.9"/>
+                            <text x="70" y="95" text-anchor="middle" fill="white" font-weight="700" font-size="16">SEGMENTATION</text>
+                            <text x="70" y="120" text-anchor="middle" fill="white" font-size="12">Identify groups</text>
+                            
+                            <!-- Arrow 1 -->
+                            <path d="M125 100 L165 100" stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                            
+                            <!-- Targeting box -->
+                            <rect x="170" y="60" width="100" height="80" rx="12" fill="#8b5cf6" opacity="0.9"/>
+                            <text x="220" y="95" text-anchor="middle" fill="white" font-weight="700" font-size="16">TARGETING</text>
+                            <text x="220" y="120" text-anchor="middle" fill="white" font-size="12">Select segments</text>
+                            
+                            <!-- Arrow 2 -->
+                            <path d="M275 100 L315 100" stroke="#64748b" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                            
+                            <!-- Positioning box -->
+                            <rect x="320" y="60" width="110" height="80" rx="12" fill="#0ea5e9" opacity="0.9"/>
+                            <text x="375" y="95" text-anchor="middle" fill="white" font-weight="700" font-size="16">POSITIONING</text>
+                            <text x="375" y="120" text-anchor="middle" fill="white" font-size="12">Create perception</text>
+                            
+                            <!-- Input/output labels -->
+                            <text x="70" y="40" text-anchor="middle" fill="#1e293b" font-weight="600">Market Data</text>
+                            <text x="375" y="160" text-anchor="middle" fill="#1e293b" font-weight="600">Strategic Advantage</text>
+                            
+                            <defs>
+                                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">The STP Strategic Flow</div>
+                    <div class="visualization-desc">A sequential process where each stage builds upon the previous one to transform raw market data into sustainable competitive advantage.</div>
+                </div>
+            </section>
+            
+            <section class="section sun-care-example" id="sun-care-example">
+                <h2 class="example-title">Sun Care Market Segmentation Example</h2>
+                <p>Consider how Costco might segment the sun care market based on consumer attitudes and behaviors:</p>
+                
+                <div class="segments-grid">
+                    <div class="segment-card">
+                        <div class="segment-name">Concerned Consumers</div>
+                        <div class="segment-desc">"A good tan is not important" — conscious of harmful sun effects, prioritize protection over aesthetics</div>
+                    </div>
+                    <div class="segment-card">
+                        <div class="segment-name">Sun Avoiders</div>
+                        <div class="segment-desc">Avoid sunbathing entirely, unlikely to use sun care products regularly</div>
+                    </div>
+                    <div class="segment-card">
+                        <div class="segment-name">Conscientious Sun Lovers</div>
+                        <div class="segment-desc">Adore sunshine but recognize risks — value brand trust and proven protection</div>
+                    </div>
+                    <div class="segment-card">
+                        <div class="segment-name">Careless Tanners</div>
+                        <div class="segment-desc">Adore sunshine but don't protect — tanning > protection, high skin cancer risk</div>
+                    </div>
+                    <div class="segment-card">
+                        <div class="segment-name">Naïve Beauty Conscious</div>
+                        <div class="segment-desc">Tan matters, recognize importance of protection but don't understand SPF factors</div>
+                    </div>
+                </div>
+                
+                <div class="concept-card tip" style="margin-top: 1.5rem;">
+                    <div class="concept-title">Strategic Insight</div>
+                    <p>These segments aren't just demographic buckets — they reflect <strong>fundamental differences in needs and motivations</strong>. A "Careless Tanner" needs education and behavioral nudges, while a "Conscientious Sun Lover" needs premium protection with trusted credentials. One-size-fits-all marketing fails both segments.</p>
+                </div>
+            </section>
+            
+            <section class="section" id="business-value">
+                <h2 class="section-title"><span>3</span> Business Value of Rigorous STP Analysis</h2>
+                <p>Organizations implementing data-driven STP analysis consistently achieve:</p>
+                <ul>
+                    <li><strong>20-30% higher marketing ROI</strong> through precise resource allocation to high-value segments</li>
+                    <li><strong>15-25% increase in customer retention</strong> by aligning offerings with segment-specific needs</li>
+                    <li><strong>Stronger brand equity</strong> through clear, differentiated positioning that resonates with target customers</li>
+                    <li><strong>More effective innovation</strong> guided by deep understanding of segment pain points and unmet needs</li>
+                    <li><strong>Competitive insulation</strong> by owning distinct market positions that are difficult to replicate</li>
+                </ul>
+                
+                <div class="concept-card">
+                    <div class="concept-title">Critical Success Factor</div>
+                    <p>STP's value isn't in the analysis itself — it's in the <strong>actionability</strong> of the outputs. Segments must be:</p>
+                    <ul>
+                        <li><strong>Identifiable:</strong> Can we recognize segment members in the marketplace?</li>
+                        <li><strong>Substantial:</strong> Is the segment large/profitable enough to serve?</li>
+                        <li><strong>Accessible:</strong> Can we reach them through communication/distribution channels?</li>
+                        <li><strong>Differentiable:</strong> Do they respond differently to marketing mix elements?</li>
+                        <li><strong>Actionable:</strong> Can we design effective programs for them?</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="key-takeaways" id="key-takeaways">
+                <h3>Key Takeaways</h3>
+                <ul>
+                    <li>STP transforms marketing from mass-market intuition to precision strategy based on customer heterogeneity</li>
+                    <li>Segmentation is the foundation — without meaningful segments, targeting and positioning lack direction</li>
+                    <li>Effective STP requires both statistical rigor (to identify segments) AND business interpretation (to make them actionable)</li>
+                    <li>R provides powerful, accessible tools to implement the entire STP workflow from data to strategic recommendations</li>
+                    <li>The ultimate test of STP isn't statistical fit — it's whether it drives better business decisions and outcomes</li>
+                </ul>
+            </section>
+            
+            <div class="next-steps">
+                <a href="index.html" class="nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Home
+                </a>
+                <a href="setup.html" class="nav-btn next">
+                    Next Module: R Environment Setup
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

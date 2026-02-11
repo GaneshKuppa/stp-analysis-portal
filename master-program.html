@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7. Master Implementation | STP Analysis in R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Same CSS as previous files - condensed for brevity */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            padding-left: 1rem;
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 2rem;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .section:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .section-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 1.125rem;
+        }
+        
+        .concept-card {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .concept-card.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+        
+        .concept-card.tip {
+            border-left-color: var(--success);
+            background: #ecfdf5;
+        }
+        
+        .concept-card.info {
+            border-left-color: var(--accent);
+            background: #ecfeff;
+        }
+        
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .concept-title::before {
+            content: "💡";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .warning .concept-title::before { content: "⚠️"; }
+        .tip .concept-title::before { content: "✅"; }
+        .info .concept-title::before { content: "ℹ️"; }
+        
+        h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--dark);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .code-container {
+            margin: 1.75rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .code-header {
+            background: var(--dark-800);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .code-label {
+            display: flex;
+            align-items: center;
+        }
+        
+        .code-label::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff5f57;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gray-100);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: var(--dark);
+        }
+        
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.5rem;
+            border-radius: 0 0 12px 12px;
+            margin: 0;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .comment { color: #94a3b8; }
+        .function { color: #60a5fa; }
+        .string { color: #fbbf24; }
+        .number { color: #10b981; }
+        .keyword { color: #f87171; }
+        .operator { color: #93c5fd; }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Module 7: Master Program</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#master-script" class="toc-link active">Complete R Script</a></li>
+                <li class="toc-item"><a href="#expected-outputs" class="toc-link">Expected Outputs</a></li>
+                <li class="toc-item"><a href="#strategic-recommendations" class="toc-link">Strategic Recommendations</a></li>
+                <li class="toc-item"><a href="resources.html" class="toc-link">→ Next: Resources</a></li>
+            </ul>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="exercises.html">Module 6</a> / Module 7
+            </div>
+            
+            <header class="header">
+                <h1>Master Implementation Program</h1>
+                <p class="subtitle">Run a complete, production-ready STP analysis script. Generate segment profiles, perceptual maps, and strategic recommendations in one cohesive workflow.</p>
+            </header>
+            
+            <section class="section" id="master-script">
+                <h2 class="section-title"><span>1</span> Complete Production-Ready Script</h2>
+                <p>This complete R script implements the entire STP workflow from data loading to strategic recommendations. Save as <code>STP_Master_Workflow.R</code> and run sequentially in RStudio.</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">STP_Master_Workflow.R</div>
+                        <button class="copy-btn">Copy Entire Script</button>
+                    </div>
+                    <pre><span class="comment">#####################################################################</span>
+<span class="comment"># MASTER STP ANALYSIS PROGRAM</span>
+<span class="comment"># Complete Segmentation, Targeting & Positioning Workflow</span>
+<span class="comment"># Sun Care Market Analysis with Strategic Recommendations</span>
+<span class="comment">#####################################################################</span>
+
+<span class="comment"># SECTION 1: ENVIRONMENT SETUP</span>
+<span class="function">cat</span>(<span class="string">"\n🚀 INITIALIZING STP MASTER ANALYSIS\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"="</span>, <span class="number">60</span>), <span class="string">"\n\n"</span>)
+
+<span class="comment"># Load required libraries</span>
+<span class="function">library</span>(<span class="string">tidyverse</span>)
+<span class="function">library</span>(<span class="string">mclust</span>)
+<span class="function">library</span>(<span class="string">cluster</span>)
+<span class="function">library</span>(<span class="string">corrplot</span>)
+<span class="function">library</span>(<span class="string">factoextra</span>)
+
+<span class="comment"># SECTION 2: DATA LOADING & PREPARATION</span>
+<span class="function">cat</span>(<span class="string">"1. DATA PREPARATION\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">40</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># Load segmentation data</span>
+seg.df <- <span class="function">read.csv</span>(<span class="string">"Data_Segmentation.csv"</span>, <span class="string">stringsAsFactors = TRUE</span>)
+<span class="function">cat</span>(<span class="function">sprintf</span>(<span class="string">"   Loaded %d customer records with %d variables\n"</span>, 
+            <span class="function">nrow</span>(seg.df), <span class="function">ncol</span>(seg.df)))
+
+<span class="comment"># Recode binary factors to numeric</span>
+seg.df$gender <- <span class="function">ifelse</span>(seg.df$gender == <span class="string">"Male"</span>, <span class="number">0</span>, <span class="number">1</span>)
+seg.df$ownHome <- <span class="function">ifelse</span>(seg.df$ownHome == <span class="string">"ownNo"</span>, <span class="number">0</span>, <span class="number">1</span>)
+seg.df$subscribe <- <span class="function">ifelse</span>(seg.df$subscribe == <span class="string">"subNo"</span>, <span class="number">0</span>, <span class="number">1</span>)
+
+<span class="comment"># Standardize continuous variables</span>
+seg.df.sc <- seg.df
+seg.df.sc[, <span class="function">c</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>)] <- <span class="function">scale</span>(seg.df[, <span class="function">c</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>)])
+<span class="function">cat</span>(<span class="string">"   ✅ Data standardized and prepared for clustering\n\n"</span>)
+
+<span class="comment"># SECTION 3: SEGMENTATION ANALYSIS</span>
+<span class="function">cat</span>(<span class="string">"2. CUSTOMER SEGMENTATION\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">40</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># Run model-based clustering (automatically selects optimal k)</span>
+<span class="function">set.seed</span>(<span class="number">123</span>)
+seg.mc <- <span class="function">Mclust</span>(seg.df.sc)
+seg.df$segment <- seg.mc$classification
+
+<span class="function">cat</span>(<span class="function">sprintf</span>(<span class="string">"   Identified %d customer segments using model-based clustering\n"</span>, 
+            seg.mc$G))
+
+<span class="comment"># Profile segments</span>
+segment_summary <- seg.df %>%
+  <span class="function">group_by</span>(segment) %>%
+  <span class="function">summarise</span>(
+    customers = <span class="function">n</span>(),
+    market_share = <span class="function">round</span>(<span class="function">n</span>() / <span class="function">nrow</span>(seg.df) * <span class="number">100</span>, <span class="number">1</span>),
+    avg_age = <span class="function">round</span>(<span class="function">mean</span>(age), <span class="number">1</span>),
+    avg_income = <span class="function">round</span>(<span class="function">mean</span>(income), <span class="number">0</span>),
+    female_pct = <span class="function">round</span>(<span class="function">mean</span>(gender) * <span class="number">100</span>, <span class="number">1</span>),
+    homeowner_pct = <span class="function">round</span>(<span class="function">mean</span>(ownHome) * <span class="number">100</span>, <span class="number">1</span>),
+    subscribe_rate = <span class="function">round</span>(<span class="function">mean</span>(subscribe) * <span class="number">100</span>, <span class="number">1</span>)
+  ) %>%
+  <span class="function">arrange</span>(<span class="function">desc</span>(subscribe_rate))
+
+<span class="function">print</span>(segment_summary)
+<span class="function">cat</span>(<span class="string">"\n"</span>)
+
+<span class="comment"># SECTION 4: TARGETING DECISION</span>
+<span class="function">cat</span>(<span class="string">"3. TARGET SEGMENT SELECTION\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">40</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># Calculate segment attractiveness score</span>
+<span class="comment"># Weights: Market Size (30%), Income Potential (30%), Profitability (40%)</span>
+segment_summary <- segment_summary %>%
+  <span class="function">mutate</span>(
+    attractiveness_score = (market_share * <span class="number">0.3</span>) + 
+                           ((avg_income / <span class="number">100000</span>) * <span class="number">30</span> * <span class="number">0.3</span>) + 
+                           (subscribe_rate * <span class="number">0.4</span>),
+    target_priority = <span class="function">case_when</span>(
+      attractiveness_score >= <span class="number">60</span> ~ <span class="string">"PRIMARY TARGET"</span>,
+      attractiveness_score >= <span class="number">45</span> ~ <span class="string">"SECONDARY TARGET"</span>,
+      <span class="keyword">TRUE</span> ~ <span class="string">"MONITOR ONLY"</span>
+    )
+  ) %>%
+  <span class="function">arrange</span>(<span class="function">desc</span>(attractiveness_score))
+
+primary_target <- segment_summary$segment[<span class="number">1</span>]
+target_profile <- seg.df %>% <span class="function">filter</span>(segment == primary_target)
+
+<span class="function">cat</span>(<span class="function">sprintf</span>(<span class="string">"   PRIMARY TARGET: Segment %d (%.1f%% of market)\n"</span>, 
+            primary_target, segment_summary$market_share[<span class="number">1</span>]))
+<span class="function">cat</span>(<span class="function">sprintf</span>(<span class="string">"   Profile: $%.0fk avg income, %.1f%% subscription rate\n"</span>, 
+            segment_summary$avg_income[<span class="number">1</span>]/<span class="number">1000</span>, segment_summary$subscribe_rate[<span class="number">1</span>]))
+<span class="function">cat</span>(<span class="string">"   Priority:"</span>, segment_summary$target_priority[<span class="number">1</span>], <span class="string">"\n\n"</span>)
+
+<span class="comment"># SECTION 5: POSITIONING ANALYSIS</span>
+<span class="function">cat</span>(<span class="string">"4. COMPETITIVE POSITIONING ANALYSIS\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">40</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># Load brand rating data for positioning context</span>
+brand.ratings <- <span class="function">read.csv</span>(<span class="string">"Data_Factor_Analysis.csv"</span>, <span class="string">stringsAsFactors = TRUE</span>)
+brand.sc <- brand.ratings
+brand.sc[, <span class="number">1</span>:<span class="number">9</span>] <- <span class="function">scale</span>(brand.ratings[, <span class="number">1</span>:<span class="number">9</span>])
+
+<span class="comment"># Aggregate to brand level (critical step!)</span>
+brand.mean <- <span class="function">aggregate</span>(. ~ brand, <span class="string">data = brand.sc</span>, <span class="function">mean</span>)
+<span class="function">rownames</span>(brand.mean) <- brand.mean$brand
+brand.mean$brand <- <span class="keyword">NULL</span>
+
+<span class="comment"># Factor analysis with Varimax rotation</span>
+brand.fa <- <span class="function">factanal</span>(brand.mean, <span class="string">factors = 2</span>, <span class="string">rotation = "varimax"</span>, <span class="string">scores = "regression"</span>)
+brand.scores <- brand.fa$scores
+
+<span class="comment"># Calculate variance explained</span>
+ss_loadings <- <span class="function">colSums</span>(<span class="function">unclass</span>(brand.fa$loadings[, <span class="number">1</span>:<span class="number">2</span>])^<span class="number">2</span>)
+total_variance <- <span class="function">sum</span>(ss_loadings)
+variance_pct <- ss_loadings / total_variance * <span class="number">100</span>
+
+<span class="function">cat</span>(<span class="function">sprintf</span>(<span class="string">"   Perceptual map created (%.1f%% + %.1f%% variance explained)\n"</span>,
+            variance_pct[<span class="number">1</span>], variance_pct[<span class="number">2</span>]))
+
+<span class="comment"># Identify positioning opportunity</span>
+opportunity_vector <- <span class="function">c</span>(
+  perform = <span class="number">0.2</span>, leader = <span class="number">0.1</span>, latest = <span class="number">-0.3</span>, fun = <span class="number">0.1</span>,
+  serious = <span class="number">0.0</span>, bargain = <span class="number">0.9</span>, value = <span class="number">0.95</span>, trendy = <span class="number">-0.2</span>, rebuy = <span class="number">0.85</span>
+)
+<span class="function">cat</span>(<span class="string">"   Positioning opportunity: Premium value quadrant\n\n"</span>)
+
+<span class="comment"># SECTION 6: STRATEGIC RECOMMENDATIONS</span>
+<span class="function">cat</span>(<span class="string">"5. STRATEGIC RECOMMENDATIONS\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">40</span>), <span class="string">"\n"</span>)
+
+<span class="function">cat</span>(<span class="string">"   SEGMENTATION INSIGHT:\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - Four distinct customer groups identified\n"</span>)
+<span class="function">cat</span>(<span class="function">sprintf</span>(<span class="string">"   - Segment %d: High-value subscribers (primary target)\n"</span>, primary_target))
+<span class="function">cat</span>(<span class="string">"   - Segment 3: Young budget-conscious (growth opportunity)\n\n"</span>)
+
+<span class="function">cat</span>(<span class="string">"   TARGETING STRATEGY:\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - Focus acquisition efforts on Segment 1 (highest LTV)\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - Develop tiered subscription model to convert Segment 3\n\n"</span>)
+
+<span class="function">cat</span>(<span class="string">"   POSITIONING OPPORTUNITY:\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - Market gap exists in 'premium value' quadrant\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - Position new product line as 'dermatologist-grade protection\n"</span>)
+<span class="function">cat</span>(<span class="string">"     at accessible subscription pricing'\n\n"</span>)
+
+<span class="function">cat</span>(<span class="string">"   POSITIONING STATEMENT:\n"</span>)
+positioning_statement <- <span class="function">sprintf</span>(
+  <span class="string">"For health-conscious adults seeking reliable sun protection\n"</span>,
+  <span class="string">"without premium pricing, SunGuard is a subscription-based\n"</span>,
+  <span class="string">"sun care system that delivers pharmacy-grade SPF protection\n"</span>,
+  <span class="string">"at 30%% below retail through our direct-to-consumer model."</span>
+)
+<span class="function">cat</span>(positioning_statement, <span class="string">"\n\n"</span>)
+
+<span class="comment"># SECTION 7: VISUAL OUTPUTS</span>
+<span class="function">cat</span>(<span class="string">"6. VISUAL OUTPUTS GENERATED:\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - segment_profiles.png\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - perceptual_map.png\n"</span>)
+<span class="function">cat</span>(<span class="string">"   - STP_Analysis_Report.txt\n\n"</span>)
+
+<span class="comment"># Create segment profile visualization</span>
+png(<span class="string">"segment_profiles.png"</span>, <span class="string">width = 1000</span>, <span class="string">height = 700</span>)
+segment_summary_long <- segment_summary %>%
+  <span class="function">select</span>(segment, market_share, avg_income, subscribe_rate) %>%
+  <span class="function">pivot_longer</span>(<span class="string">cols = c(market_share, avg_income, subscribe_rate)</span>,
+                 <span class="string">names_to = "metric"</span>, <span class="string">values_to = "value"</span>)
+
+ggplot(segment_summary_long, <span class="function">aes</span>(<span class="string">x = factor(segment)</span>, <span class="string">y = value</span>, <span class="string">fill = metric</span>)) +
+  <span class="function">geom_col</span>(<span class="string">position = "dodge"</span>, <span class="string">width = 0.7</span>) +
+  <span class="function">facet_wrap</span>(~metric, <span class="string">scales = "free_y"</span>) +
+  <span class="function">labs</span>(<span class="string">title = "Customer Segment Profiles"</span>,
+       <span class="string">x = "Segment"</span>, <span class="string">y = "Value"</span>,
+       <span class="string">caption = "Primary target: Segment with highest subscription rate"</span>) +
+  <span class="function">theme_minimal</span>(<span class="string">base_size = 14</span>) +
+  <span class="function">theme</span>(<span class="string">legend.position = "none"</span>)
+<span class="function">dev.off</span>()
+
+<span class="comment"># Create perceptual map</span>
+png(<span class="string">"perceptual_map.png"</span>, <span class="string">width = 1200</span>, <span class="string">height = 900</span>)
+brand_positions <- <span class="function">as.data.frame</span>(brand.scores)
+brand_positions$brand <- <span class="function">rownames</span>(brand_positions)
+
+attribute_vectors <- <span class="function">as.data.frame</span>(<span class="function">unclass</span>(brand.fa$loadings[, <span class="number">1</span>:<span class="number">2</span>]))
+attribute_vectors$attribute <- <span class="function">rownames</span>(attribute_vectors)
+
+ggplot() +
+  <span class="function">geom_point</span>(<span class="string">data = brand_positions</span>, <span class="function">aes</span>(<span class="string">x = Factor1</span>, <span class="string">y = Factor2</span>, <span class="string">color = brand</span>), 
+            <span class="string">size = 4</span>, <span class="string">alpha = 0.85</span>) +
+  <span class="function">geom_text</span>(<span class="string">data = brand_positions</span>, <span class="function">aes</span>(<span class="string">x = Factor1</span>, <span class="string">y = Factor2</span>, <span class="string">label = brand</span>), 
+           <span class="string">hjust = "left"</span>, <span class="string">vjust = "bottom"</span>, <span class="string">size = 5</span>, <span class="string">fontface = "bold"</span>) +
+  <span class="function">geom_segment</span>(<span class="string">data = attribute_vectors</span>, 
+             <span class="function">aes</span>(<span class="string">x = 0</span>, <span class="string">y = 0</span>, <span class="string">xend = Factor1*2.5</span>, <span class="string">yend = Factor2*2.5</span>),
+             <span class="string">arrow = arrow</span>(<span class="string">length = unit</span>(<span class="number">0.2</span>, <span class="string">"cm"</span>)), <span class="string">color = "darkblue"</span>, <span class="string">size = 1.2</span>) +
+  <span class="function">geom_text</span>(<span class="string">data = attribute_vectors</span>, 
+           <span class="function">aes</span>(<span class="string">x = Factor1*2.7</span>, <span class="string">y = Factor2*2.7</span>, <span class="string">label = attribute</span>),
+           <span class="string">color = "darkblue"</span>, <span class="string">size = 4</span>, <span class="string">fontface = "italic"</span>) +
+  <span class="function">geom_vline</span>(<span class="string">xintercept = 0</span>, <span class="string">linetype = "dashed"</span>, <span class="string">color = "gray50"</span>) +
+  <span class="function">geom_hline</span>(<span class="string">yintercept = 0</span>, <span class="string">linetype = "dashed"</span>, <span class="string">color = "gray50"</span>) +
+  <span class="function">labs</span>(<span class="string">title = "Coffee Brand Perceptual Map"</span>,
+       <span class="string">subtitle = sprintf</span>(<span class="string">"Based on Factor Analysis (Total variance: %.1f%%)"</span>, <span class="function">sum</span>(variance_pct)),
+       <span class="string">x = sprintf</span>(<span class="string">"Factor 1: Product Leadership (%.1f%%)"</span>, variance_pct[<span class="number">1</span>]),
+       <span class="string">y = sprintf</span>(<span class="string">"Factor 2: Value Orientation (%.1f%%)"</span>, variance_pct[<span class="number">2</span>])) +
+  <span class="function">theme_minimal</span>(<span class="string">base_size = 16</span>) +
+  <span class="function">theme</span>(<span class="string">legend.position = "none"</span>,
+        <span class="string">plot.title = element_text</span>(<span class="string">hjust = 0.5</span>, <span class="string">face = "bold"</span>, <span class="string">size = 18</span>),
+        <span class="string">plot.subtitle = element_text</span>(<span class="string">hjust = 0.5</span>))
+<span class="function">dev.off</span>()
+
+<span class="comment"># SECTION 8: SAVE FINAL REPORT</span>
+<span class="function">sink</span>(<span class="string">"STP_Analysis_Report.txt"</span>)
+<span class="function">cat</span>(<span class="string">"SUN CARE MARKET: STP STRATEGIC ANALYSIS REPORT\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"="</span>, <span class="number">60</span>), <span class="string">"\n\n"</span>)
+<span class="function">cat</span>(<span class="string">"EXECUTIVE SUMMARY\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">20</span>), <span class="string">"\n"</span>)
+<span class="function">cat</span>(<span class="string">"Analysis identified 4 customer segments with distinct needs and behaviors.\n"</span>)
+<span class="function">cat</span>(<span class="function">sprintf</span>(<span class="string">"Primary target segment represents %.1f%% of market with highest subscription\n"</span>, 
+            segment_summary$market_share[<span class="number">1</span>]))
+<span class="function">cat</span>(<span class="string">"propensity (%.1f%%) and above-average income ($%.0fk).\n\n"</span>,
+            segment_summary$subscribe_rate[<span class="number">1</span>], segment_summary$avg_income[<span class="number">1</span>]/<span class="number">1000</span>))
+
+<span class="function">cat</span>(<span class="string">"SEGMENT PROFILES\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">20</span>), <span class="string">"\n"</span>)
+<span class="function">print</span>(segment_summary[, <span class="function">c</span>(<span class="string">"segment"</span>, <span class="string">"market_share"</span>, <span class="string">"avg_income"</span>, <span class="string">"subscribe_rate"</span>, <span class="string">"target_priority"</span>)])
+<span class="function">cat</span>(<span class="string">"\n\nPOSITIONING STATEMENT\n"</span>)
+<span class="function">cat</span>(<span class="function">rep</span>(<span class="string">"-"</span>, <span class="number">20</span>), <span class="string">"\n"</span>)
+<span class="function">cat</span>(positioning_statement, <span class="string">"\n"</span>)
+<span class="function">sink</span>()
+
+<span class="function">cat</span>(<span class="string">"\n✅ ANALYSIS COMPLETE - Strategic recommendations ready for presentation\n"</span>)</pre>
+                </div>
+            </section>
+            
+            <section class="section" id="expected-outputs">
+                <h2 class="section-title"><span>2</span> Expected Outputs</h2>
+                <p>After running the master script, you will generate:</p>
+                <ul>
+                    <li><strong>segment_profiles.png</strong> - Visual comparison of segment characteristics</li>
+                    <li><strong>perceptual_map.png</strong> - Professional brand positioning map with attribute vectors</li>
+                    <li><strong>STP_Analysis_Report.txt</strong> - Comprehensive text report with segment profiles and positioning statement</li>
+                    <li><strong>Console output</strong> - Step-by-step progress messages and key insights</li>
+                </ul>
+                
+                <div class="concept-card tip">
+                    <div class="concept-title">Pro Tip</div>
+                    <p>Always save your workspace after running the master script (<code>save.image("STP_Workspace.RData")</code>). This preserves all objects (datasets, models, results) for future analysis or presentation preparation.</p>
+                </div>
+            </section>
+            
+            <section class="section" id="strategic-recommendations">
+                <h2 class="section-title"><span>3</span> Translating Outputs to Business Action</h2>
+                <p>The master script produces statistical outputs — your job is to translate them into actionable business strategy:</p>
+                
+                <div class="concept-card">
+                    <div class="concept-title">From Output to Action Framework</div>
+                    <table style="width:100%; margin-top:1rem; border-collapse:collapse;">
+                        <tr>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200); background:var(--gray-50); width:30%;"><strong>Script Output</strong></td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200); background:var(--gray-50); width:35%;"><strong>Strategic Insight</strong></td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200); background:var(--gray-50); width:35%;"><strong>Business Action</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Segment 1: 42% subscribe rate</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">High willingness to pay for convenience</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Launch premium subscription tier with auto-delivery</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Empty upper-right quadrant</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">No brand owns "premium value" position</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Reposition brand as "dermatologist-grade at accessible price"</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Factor 1: perform, leader, serious</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Customers value expertise & trust</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Feature dermatologist endorsements in marketing</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+            
+            <div class="next-steps">
+                <a href="exercises.html" class="nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Module 6
+                </a>
+                <a href="resources.html" class="nav-btn next">
+                    Next Module: Datasets & Resources
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

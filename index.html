@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STP Analysis in R | Learning Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .badge.secondary { background: var(--secondary); }
+        .badge.success { background: var(--success); }
+        .badge.warning { background: var(--warning); }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.75rem;
+            margin-top: 2rem;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+        
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .module-card.positioning::before { background: var(--secondary); }
+        .module-card.workflow::before { background: var(--accent); }
+        .module-card.exercises::before { background: var(--success); }
+        
+        .module-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .module-card.positioning .module-number {
+            background: linear-gradient(135deg, var(--secondary), #a78bfa);
+        }
+        
+        .module-card.workflow .module-number {
+            background: linear-gradient(135deg, var(--accent), #38bdf8);
+        }
+        
+        .module-card.exercises .module-number {
+            background: linear-gradient(135deg, var(--success), #34d399);
+        }
+        
+        .module-title {
+            font-size: 1.625rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .module-desc {
+            color: var(--gray-700);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+        
+        .module-link {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: 2px solid var(--primary);
+        }
+        
+        .module-link:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+        
+        .module-card.positioning .module-link {
+            background: var(--secondary);
+            border-color: var(--secondary);
+        }
+        
+        .module-card.positioning .module-link:hover {
+            color: var(--secondary);
+        }
+        
+        .module-card.workflow .module-link {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .module-card.workflow .module-link:hover {
+            color: var(--accent);
+        }
+        
+        .module-card.exercises .module-link {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        
+        .module-card.exercises .module-link:hover {
+            color: var(--success);
+        }
+        
+        .learning-path {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2.5rem;
+            margin: 3rem 0;
+        }
+        
+        .path-title {
+            text-align: center;
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--dark);
+        }
+        
+        .path-steps {
+            display: flex;
+            justify-content: space-between;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .path-steps::before {
+            content: '';
+            position: absolute;
+            top: 36px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gray-200);
+            z-index: 1;
+        }
+        
+        .path-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            width: 150px;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .step-title {
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .path-steps {
+                flex-direction: column;
+                align-items: center;
+                gap: 2rem;
+            }
+            
+            .path-steps::before {
+                display: none;
+            }
+            
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2.25rem;
+            }
+            
+            .subtitle {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Segmentation, Targeting & Positioning (STP) Analysis in R</h1>
+            <p class="subtitle">A comprehensive, hands-on guide to implementing marketing analytics workflows using R Studio — from foundational concepts to advanced perceptual mapping and cluster analysis.</p>
+            <div class="badges">
+                <span class="badge">Beginner to Advanced</span>
+                <span class="badge secondary">R Studio Required</span>
+                <span class="badge success">Real Datasets Included</span>
+                <span class="badge warning">Hands-On Exercises</span>
+            </div>
+        </header>
+        
+        <div class="learning-path">
+            <h2 class="path-title">Your Learning Journey</h2>
+            <div class="path-steps">
+                <div class="path-step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Introduction to STP Framework</div>
+                </div>
+                <div class="path-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">R Environment Setup</div>
+                </div>
+                <div class="path-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Segmentation Analysis</div>
+                </div>
+                <div class="path-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Positioning Analysis</div>
+                </div>
+                <div class="path-step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Integrated Workflow</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="module-number">1</div>
+                <h2 class="module-title">Introduction to STP Framework</h2>
+                <p class="module-desc">Understand the core philosophy of managing customer heterogeneity through Segmentation, Targeting, and Positioning. Learn why STP is the cornerstone of modern marketing strategy.</p>
+                <a href="introduction.html" class="module-link">Start Learning →</a>
+            </div>
+            
+            <div class="module-card">
+                <div class="module-number">2</div>
+                <h2 class="module-title">R Environment Setup</h2>
+                <p class="module-desc">Configure your R environment for success. Install required packages, prepare realistic marketing datasets, and master essential R objects for analytics workflows.</p>
+                <a href="setup.html" class="module-link">Start Learning →</a>
+            </div>
+            
+            <div class="module-card">
+                <div class="module-number">3</div>
+                <h2 class="module-title">Segmentation Analysis</h2>
+                <p class="module-desc">Implement cluster analysis to identify homogeneous customer groups. Master hierarchical, k-means, and model-based clustering with business interpretation.</p>
+                <a href="segmentation.html" class="module-link">Start Learning →</a>
+            </div>
+            
+            <div class="module-card positioning">
+                <div class="module-number">4</div>
+                <h2 class="module-title">Positioning Analysis</h2>
+                <p class="module-desc">Transform complex attribute data into actionable insights using factor analysis and perceptual mapping. Learn mathematical foundations and strategic interpretation.</p>
+                <a href="positioning.html" class="module-link">Start Learning →</a>
+            </div>
+            
+            <div class="module-card workflow">
+                <div class="module-number">5</div>
+                <h2 class="module-title">Integrated STP Workflow</h2>
+                <p class="module-desc">Combine segmentation, targeting, and positioning into a cohesive strategic workflow. Translate statistical outputs into business decisions with real-world examples.</p>
+                <a href="integrated-workflow.html" class="module-link">Start Learning →</a>
+            </div>
+            
+            <div class="module-card exercises">
+                <div class="module-number">6</div>
+                <h2 class="module-title">Practical Exercises</h2>
+                <p class="module-desc">Apply your knowledge with hands-on exercises. Validate segments, identify positioning gaps, and master debugging techniques for common R errors.</p>
+                <a href="exercises.html" class="module-link">Start Learning →</a>
+            </div>
+            
+            <div class="module-card workflow">
+                <div class="module-number">7</div>
+                <h2 class="module-title">Master Implementation</h2>
+                <p class="module-desc">Run a complete, production-ready STP analysis script. Generate segment profiles, perceptual maps, and strategic recommendations in one cohesive workflow.</p>
+                <a href="master-program.html" class="module-link">Start Learning →</a>
+            </div>
+            
+            <div class="module-card exercises">
+                <div class="module-number">8</div>
+                <h2 class="module-title">Datasets & Resources</h2>
+                <p class="module-desc">Access sample datasets, R cheatsheets, and additional resources to support your learning journey and real-world applications.</p>
+                <a href="resources.html" class="module-link">Access Resources →</a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>STP Analysis Learning Portal | Marketing Analytics with R | Created for Educational Purposes</p>
+            <p>Based on lecture materials from Dr. Ashutosh Singh, University of Leeds</p>
+        </footer>
+    </div>
+</body>
+</html>

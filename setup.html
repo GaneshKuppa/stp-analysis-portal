@@ -1,0 +1,716 @@
+<!-- File 3: setup.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2. R Environment Setup | STP Analysis in R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Same CSS as introduction.html plus setup-specific styles */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+        
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            padding-left: 1rem;
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            padding-left: 1rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 2rem;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            max-width: 700px;
+            margin-bottom: 2rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+        
+        .section:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+        
+        .section-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 8px;
+            margin-right: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-size: 1.125rem;
+        }
+        
+        .concept-card {
+            background: var(--gray-50);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .concept-card.warning {
+            border-left-color: var(--warning);
+            background: #fffbeb;
+        }
+        
+        .concept-card.tip {
+            border-left-color: var(--success);
+            background: #ecfdf5;
+        }
+        
+        .concept-card.info {
+            border-left-color: var(--accent);
+            background: #ecfeff;
+        }
+        
+        .concept-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .concept-title::before {
+            content: "💡";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .warning .concept-title::before { content: "⚠️"; }
+        .tip .concept-title::before { content: "✅"; }
+        .info .concept-title::before { content: "ℹ️"; }
+        
+        h3 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--dark);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .checklist {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .checklist-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .checklist-title::before {
+            content: "✓";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            margin-right: 8px;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        
+        .checklist ul {
+            padding-left: 2rem;
+        }
+        
+        .checklist li {
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .checklist li::before {
+            content: "□";
+            position: absolute;
+            left: -1.75rem;
+            color: var(--gray-300);
+            font-size: 1.2rem;
+        }
+        
+        .checklist li.checked::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .code-container {
+            margin: 1.75rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .code-header {
+            background: var(--dark-800);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .code-label {
+            display: flex;
+            align-items: center;
+        }
+        
+        .code-label::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ff5f57;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--gray-100);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: var(--dark);
+        }
+        
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.5rem;
+            border-radius: 0 0 12px 12px;
+            margin: 0;
+            overflow-x: auto;
+            line-height: 1.5;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .comment { color: #94a3b8; }
+        .function { color: #60a5fa; }
+        .string { color: #fbbf24; }
+        .number { color: #10b981; }
+        .keyword { color: #f87171; }
+        .operator { color: #93c5fd; }
+        
+        .dataset-preview {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+        
+        .dataset-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        
+        .dataset-title::before {
+            content: "📊";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        
+        th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 0.625rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-700);
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--gray-50);
+        }
+        
+        tr:hover {
+            background-color: #dbeafe;
+        }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Module 2: R Setup</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#installation" class="toc-link active">Installation Guide</a></li>
+                <li class="toc-item"><a href="#packages" class="toc-link">Required Packages</a></li>
+                <li class="toc-item"><a href="#datasets" class="toc-link">Dataset Preparation</a></li>
+                <li class="toc-item"><a href="#r-objects" class="toc-link">R Objects Fundamentals</a></li>
+                <li class="toc-item"><a href="segmentation.html" class="toc-link">→ Next: Segmentation</a></li>
+            </ul>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="introduction.html">Module 1</a> / Module 2
+            </div>
+            
+            <header class="header">
+                <h1>R Environment Setup</h1>
+                <p class="subtitle">Configure your R environment for success. Install required packages, prepare datasets, and master essential R objects for analytics workflows.</p>
+            </header>
+            
+            <section class="section" id="installation">
+                <h2 class="section-title"><span>1</span> Installation Guide</h2>
+                
+                <div class="checklist">
+                    <div class="checklist-title">R & RStudio Setup Checklist</div>
+                    <ul>
+                        <li class="checked">Download and install R from <a href="https://cran.r-project.org/" target="_blank" style="color:var(--primary);text-decoration:underline">CRAN</a></li>
+                        <li class="checked">Download and install RStudio Desktop from <a href="https://www.rstudio.com/products/rstudio/download/" target="_blank" style="color:var(--primary);text-decoration:underline">RStudio website</a></li>
+                        <li class="checked">Create a dedicated project folder named "STP_Analysis"</li>
+                        <li class="checked">Set your working directory: Session > Set Working Directory > To Source File Location</li>
+                        <li>Create an R script file (File > New File > R Script) and save as "STP_Workflow.R"</li>
+                    </ul>
+                </div>
+                
+                <h3>Setting Your Working Directory</h3>
+                <p>The working directory is where R looks for files and saves outputs. Set it properly to avoid file path errors:</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">set_working_directory.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Method 1: Through RStudio menu</span>
+<span class="comment"># Session > Set Working Directory > Choose Directory</span>
+
+<span class="comment"># Method 2: Using R code (recommended for reproducibility)</span>
+<span class="function">setwd</span>(<span class="string">"C:/Users/YourName/Documents/STP_Analysis"</span>)
+
+<span class="comment"># Verify working directory</span>
+<span class="function">getwd</span>()</pre>
+                </div>
+            </section>
+            
+            <section class="section" id="packages">
+                <h2 class="section-title"><span>2</span> Required R Packages</h2>
+                <p>Install these essential packages for STP analysis. Run this code in your R console:</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">install_packages.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Install required packages (run once)</span>
+<span class="function">install.packages</span>(<span class="string">c(</span>
+  <span class="string">"tidyverse"</span>,    <span class="comment"># Data manipulation & visualization</span>
+  <span class="string">"cluster"</span>,      <span class="comment"># Clustering algorithms</span>
+  <span class="string">"mclust"</span>,       <span class="comment"># Model-based clustering</span>
+  <span class="string">"corrplot"</span>,     <span class="comment"># Correlation visualizations</span>
+  <span class="string">"gplots"</span>,       <span class="comment"># Heatmaps and visualizations</span>
+  <span class="string">"nFactors"</span>,     <span class="comment"># Factor analysis tools</span>
+  <span class="string">"psych"</span>,        <span class="comment"># Advanced factor analysis</span>
+  <span class="string">"factoextra"</span>    <span class="comment"># Enhanced factor visualizations</span>
+<span class="string">)</span>)
+
+<span class="comment"># Load libraries (run every session)</span>
+<span class="keyword">library</span>(<span class="string">tidyverse</span>)
+<span class="keyword">library</span>(<span class="string">cluster</span>)
+<span class="keyword">library</span>(<span class="string">mclust</span>)
+<span class="keyword">library</span>(<span class="string">corrplot</span>)
+<span class="keyword">library</span>(<span class="string">gplots</span>)
+<span class="keyword">library</span>(<span class="string">nFactors</span>)
+<span class="keyword">library</span>(<span class="string">psych</span>)
+<span class="keyword">library</span>(<span class="string">factoextra</span>)</pre>
+                </div>
+                
+                <div class="concept-card tip">
+                    <div class="concept-title">Pro Tip</div>
+                    <p>After installing packages, restart RStudio to ensure all dependencies load correctly. Use <code>sessionInfo()</code> to verify package versions if you encounter errors.</p>
+                </div>
+            </section>
+            
+            <section class="section" id="datasets">
+                <h2 class="section-title"><span>3</span> Dataset Preparation</h2>
+                <p>We'll work with two realistic marketing datasets that mirror real-world scenarios:</p>
+                
+                <div class="dataset-preview">
+                    <div class="dataset-title">Dataset 1: Sun Care Market Segmentation (Data_Segmentation.csv)</div>
+                    <p>300 customer records with demographic and behavioral variables:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Example Values</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>age</td><td>Numeric</td><td>Customer age</td><td>25, 34, 42, 28</td></tr>
+                            <tr><td>gender</td><td>Factor</td><td>Gender identity</td><td>Male, Female</td></tr>
+                            <tr><td>income</td><td>Numeric</td><td>Annual income ($)</td><td>45000, 62000, 78000</td></tr>
+                            <tr><td>kids</td><td>Numeric</td><td>Number of children</td><td>0, 1, 2, 3</td></tr>
+                            <tr><td>ownHome</td><td>Factor</td><td>Home ownership status</td><td>ownYes, ownNo</td></tr>
+                            <tr><td>subscribe</td><td>Factor</td><td>Membership subscription status</td><td>subYes, subNo</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="dataset-preview">
+                    <div class="dataset-title">Dataset 2: Coffee Brand Positioning (Data_Factor_Analysis.csv)</div>
+                    <p>1,000 observations (100 respondents × 10 brands) with perceptual attribute ratings:</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Scale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>perform</td><td>Numeric</td><td>Brand has strong performance</td><td>1-10</td></tr>
+                            <tr><td>leader</td><td>Numeric</td><td>Brand is a leader in the field</td><td>1-10</td></tr>
+                            <tr><td>latest</td><td>Numeric</td><td>Brand has the latest products</td><td>1-10</td></tr>
+                            <tr><td>fun</td><td>Numeric</td><td>Brand is fun</td><td>1-10</td></tr>
+                            <tr><td>serious</td><td>Numeric</td><td>Brand is serious</td><td>1-10</td></tr>
+                            <tr><td>bargain</td><td>Numeric</td><td>Brand products are a bargain</td><td>1-10</td></tr>
+                            <tr><td>value</td><td>Numeric</td><td>Brand has good value</td><td>1-10</td></tr>
+                            <tr><td>trendy</td><td>Numeric</td><td>Brand is trendy</td><td>1-10</td></tr>
+                            <tr><td>rebuy</td><td>Numeric</td><td>I would buy from Brand again</td><td>1-10</td></tr>
+                            <tr><td>brand</td><td>Factor</td><td>Brand identifier (a-j)</td><td>a, b, c, ..., j</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="concept-card warning">
+                    <div class="concept-title">Critical Preprocessing Step</div>
+                    <p>Before analysis, you MUST standardize continuous variables using Z-scores. Variables on different scales (e.g., age 18-65 vs. income 20k-100k) will dominate distance calculations, producing meaningless clusters. Use <code>scale()</code> function in R.</p>
+                </div>
+            </section>
+            
+            <section class="section" id="r-objects">
+                <h2 class="section-title"><span>4</span> R Objects Fundamentals</h2>
+                
+                <h3>Vectors: One-Dimensional Collections</h3>
+                <p>Vectors are the simplest R objects, containing elements of the same type:</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">vectors.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Numeric vector</span>
+numeric_vec <- <span class="function">c</span>(<span class="number">1</span>, <span class="number">3.14</span>, <span class="number">5</span>, <span class="number">7</span>)
+
+<span class="comment"># Logical vector</span>
+logical_vec <- <span class="function">c</span>(<span class="keyword">TRUE</span>, <span class="keyword">FALSE</span>, <span class="keyword">TRUE</span>)
+
+<span class="comment"># Character vector</span>
+char_vec <- <span class="function">c</span>(<span class="string">"sun"</span>, <span class="string">"care"</span>, <span class="string">"protection"</span>)
+
+<span class="comment"># Access elements (indexing starts at 1)</span>
+numeric_vec[<span class="number">2</span>]  <span class="comment"># Returns: 3.14</span>
+char_vec[<span class="number">1</span>:<span class="number">2</span>] <span class="comment"># Returns: "sun" "care"</span></pre>
+                </div>
+                
+                <h3>Data Frames: Rectangular Datasets</h3>
+                <p>Data frames are the workhorse objects in R, used to hold datasets:</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">data_frames.R</div>
+                        <button class="copy-btn">Copy</button>
+                    </div>
+                    <pre><span class="comment"># Create a data frame</span>
+customer_df <- <span class="function">data.frame</span>(
+  age = <span class="function">c</span>(<span class="number">25</span>, <span class="number">34</span>, <span class="number">42</span>, <span class="number">28</span>),
+  income = <span class="function">c</span>(<span class="number">45000</span>, <span class="number">62000</span>, <span class="number">78000</span>, <span class="number">51000</span>),
+  gender = <span class="function">factor</span>(<span class="function">c</span>(<span class="string">"Female"</span>, <span class="string">"Male"</span>, <span class="string">"Female"</span>, <span class="string">"Male"</span>)),
+  sunscreen_use = <span class="function">c</span>(<span class="number">5</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">3</span>)  <span class="comment"># 1-5 scale</span>
+)
+
+<span class="comment"># View structure</span>
+<span class="function">str</span>(customer_df)  <span class="comment"># Shows data types & dimensions</span>
+<span class="function">summary</span>(customer_df)  <span class="comment"># Basic statistics</span>
+
+<span class="comment"># Access columns</span>
+customer_df$age  <span class="comment"># Returns age column</span>
+customer_df[<span class="number">1</span>, <span class="number">3</span>]   <span class="comment"># Returns row 1, column 3 (gender of first customer)</span></pre>
+                </div>
+                
+                <div class="concept-card tip">
+                    <div class="concept-title">Best Practice</div>
+                    <p>Always convert categorical variables to <code>factor</code> type before analysis. This ensures R treats them appropriately in statistical models and visualizations.</p>
+                </div>
+            </section>
+            
+            <div class="next-steps">
+                <a href="introduction.html" class="nav-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Module 1
+                </a>
+                <a href="segmentation.html" class="nav-btn next">
+                    Next Module: Segmentation Analysis
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
