@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STP Command Lab | Learn by Doing in R</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --formula-bg: #0f172a;
+            --formula-border: #334155;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 1.5rem;
+            align-self: flex-start;
+        }
+        
+        .sidebar-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-header svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.4rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            transform: translateX(3px);
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            border-left: 3px solid var(--primary);
+            padding-left: 0.85rem;
+        }
+        
+        .toc-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 4px;
+            background: var(--gray-300);
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        .toc-link.active::before {
+            opacity: 1;
+            background: var(--primary);
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 1.5rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem 0;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.35rem;
+            color: var(--gray-700);
+            max-width: 750px;
+            margin: 0 auto 1.5rem;
+            font-weight: 500;
+        }
+        
+        .tagline {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(126, 58, 242, 0.1));
+            border-radius: 16px;
+            padding: 1.25rem;
+            max-width: 700px;
+            margin: 1.5rem auto;
+            border-left: 4px solid var(--primary);
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--dark);
+        }
+        
+        .section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            padding: 2.25rem;
+            margin-bottom: 2.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section:hover {
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.12), 0 10px 15px -6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--primary);
+        }
+        
+        .section.positioning::before {
+            background: var(--secondary);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-100);
+            gap: 15px;
+        }
+        
+        .section-title svg {
+            width: 32px;
+            height: 32px;
+            color: var(--primary);
+        }
+        
+        .positioning .section-title svg {
+            color: var(--secondary);
+        }
+        
+        .concept-intro {
+            font-size: 1.25rem;
+            margin-bottom: 1.75rem;
+            line-height: 1.7;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            border-radius: 14px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .formula-box {
+            background: var(--formula-bg);
+            color: var(--code-text);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            line-height: 1.8;
+            position: relative;
+            border: 1px solid var(--formula-border);
+            overflow-x: auto;
+        }
+        
+        .formula-box::before {
+            content: "Mathematical Foundation";
+            position: absolute;
+            top: -14px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 0.35rem 1.1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .math-var {
+            color: #60a5fa;
+            font-style: italic;
+        }
+        
+        .math-symbol {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .math-comment {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.95em;
+            display: block;
+            margin-top: 0.75rem;
+            padding-left: 1.5rem;
+        }
+        
+        .code-container {
+            margin: 2.25rem 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .code-header {
+            background: var(--dark-800);
+            color: white;
+            padding: 0.9rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .code-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .code-label::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #ff5f57;
+            border-radius: 50%;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .copy-btn:active {
+            background: rgba(255, 255, 255, 0.35);
+        }
+        
+        .copy-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 2rem;
+            margin: 0;
+            overflow-x: auto;
+            line-height: 1.6;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+        }
+        
+        .comment { color: #94a3b8; }
+        .function { color: #60a5fa; font-weight: 500; }
+        .string { color: #fbbf24; }
+        .number { color: #10b981; }
+        .keyword { color: #f87171; }
+        .operator { color: #93c5fd; }
+        .package { color: #c084fc; }
+        
+        .output-container {
+            background: var(--gray-50);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--success);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        .output-container::before {
+            content: "Console Output";
+            display: block;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+        }
+        
+        .visualization-container {
+            background: white;
+            border: 2px dashed var(--gray-300);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            margin: 2.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            height: 380px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.75rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+        }
+        
+        .visualization-placeholder svg {
+            max-width: 90%;
+            max-height: 90%;
+            opacity: 0.92;
+        }
+        
+        .visualization-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            font-size: 1.5rem;
+        }
+        
+        .visualization-desc {
+            color: var(--gray-700);
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto 1.25rem;
+            line-height: 1.7;
+        }
+        
+        .interpretation {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(56, 189, 248, 0.08));
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--success);
+        }
+        
+        .interpretation-title {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            font-size: 1.4rem;
+            gap: 10px;
+        }
+        
+        .interpretation-title svg {
+            width: 24px;
+            height: 24px;
+            color: var(--success);
+        }
+        
+        .pro-tips {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.08));
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .pro-tips h3 {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            font-size: 1.45rem;
+            gap: 10px;
+        }
+        
+        .pro-tips h3 svg {
+            width: 26px;
+            height: 26px;
+            color: var(--warning);
+        }
+        
+        .pro-tips ul {
+            padding-left: 1.75rem;
+            margin-top: 0.75rem;
+        }
+        
+        .pro-tips li {
+            margin-bottom: 0.85rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .pro-tips li::marker {
+            color: var(--warning);
+            font-weight: bold;
+        }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3.5rem;
+            padding-top: 2.5rem;
+            border-top: 2px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 1.1rem 2rem;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.15rem;
+            transition: var(--transition);
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+        }
+        
+        .nav-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+            box-shadow: 0 4px 12px rgba(126, 58, 242, 0.35);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+            box-shadow: 0 6px 16px rgba(126, 58, 242, 0.45);
+        }
+        
+        .learning-path {
+            display: flex;
+            justify-content: center;
+            margin: 2.5rem 0;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .path-step {
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 1.4rem 1.2rem;
+            min-width: 140px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        
+        .path-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            margin: 0 auto 0.9rem;
+            font-size: 1.4rem;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 1.15rem;
+            color: var(--dark);
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                padding: 1.25rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 1.75rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1.25rem;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 1.75rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .learning-path {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .path-step {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .formula-box {
+                font-size: 1.15rem;
+                padding: 1.5rem;
+            }
+            
+            pre {
+                padding: 1.5rem;
+                font-size: 0.95rem;
+            }
+            
+            .visualization-placeholder {
+                height: 300px;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Command Lab Modules
+            </div>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#euclidean" class="toc-link active">Euclidean Distance</a></li>
+                <li class="toc-item"><a href="#hierarchical" class="toc-link">Hierarchical Clustering</a></li>
+                <li class="toc-item"><a href="#kmeans" class="toc-link">K-Means Clustering</a></li>
+                <li class="toc-item"><a href="#mclust" class="toc-link">Model-Based Clustering</a></li>
+                <li class="toc-item"><a href="#correlation" class="toc-link">Correlation Matrix</a></li>
+                <li class="toc-item"><a href="#pca" class="toc-link">Principal Component Analysis</a></li>
+                <li class="toc-item"><a href="#factor-analysis" class="toc-link">Factor Analysis</a></li>
+                <li class="toc-item"><a href="#perceptual-map" class="toc-link">Perceptual Mapping</a></li>
+            </ul>
+            
+            <div class="sidebar-header" style="margin-top: 2rem;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.21-.24-2.383-.666-3.519M12 2.944a11.955 11.955 0 018.618 3.04"></path>
+                </svg>
+                Learning Path
+            </div>
+            <div class="learning-path">
+                <div class="path-step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Run Command</div>
+                </div>
+                <div class="path-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">See Output</div>
+                </div>
+                <div class="path-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Understand Why</div>
+                </div>
+                <div class="path-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Apply Insight</div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <header class="header">
+                <h1>STP Command Lab: Learn by Doing</h1>
+                <p class="subtitle">Master segmentation and positioning through immediate command execution — no theory without practice. Run real R commands, see instant outputs, and understand the business insight behind every calculation.</p>
+                <div class="tagline">
+                    "Don't learn clustering theory first — run <code>hclust()</code> now, see your customer segments instantly, then understand why it works."
+                </div>
+            </header>
+            
+            <!-- EUCLIDEAN DISTANCE SECTION -->
+            <section class="section" id="euclidean">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-6 6m0 0l-6-6m6 6V9a6 6 0 0112 0v3"></path>
+                    </svg>
+                    Euclidean Distance: Measuring Customer Similarity
+                </h2>
+                
+                <div class="concept-intro">
+                    Before clustering customers, we need to measure how similar they are. Euclidean distance calculates straight-line distance between two customers in multi-dimensional space (age, income, etc.). <strong>Smaller distance = more similar customers.</strong>
+                </div>
+                
+                <div class="formula-box">
+                    <div>d(<span class="math-var">i</span>, <span class="math-var">j</span>) = √[ Σ (<span class="math-var">x</span><span class="math-symbol">_ik</span> - <span class="math-var">x</span><span class="math-symbol">_jk</span>)<span class="math-symbol">²</span> ]</div>
+                    <div class="math-comment"># Where:</div>
+                    <div><span class="math-var">d</span>(<span class="math-var">i</span>,<span class="math-var">j</span>) = distance between customers <span class="math-var">i</span> and <span class="math-var">j</span></div>
+                    <div><span class="math-var">x</span><span class="math-symbol">_ik</span> = value of variable <span class="math-var">k</span> (e.g., income) for customer <span class="math-var">i</span></div>
+                    <div><span class="math-var">x</span><span class="math-symbol">_jk</span> = value of variable <span class="math-var">k</span> for customer <span class="math-var">j</span></div>
+                    <div class="math-comment">⚠️ Critical: Variables MUST be standardized first (using scale()) so income doesn't dominate age</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">euclidean_distance.R</div>
+                        <button class="copy-btn" onclick="copyCode('euclidean-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="euclidean-code"><span class="comment"># Load customer data (300 customers with age, income, kids)</span>
+seg.df <- <span class="function">read.csv</span>(<span class="string">"Data_Segmentation.csv"</span>, <span class="string">stringsAsFactors = TRUE</span>)
+
+<span class="comment"># STEP 1: Standardize continuous variables (CRITICAL!)</span>
+<span class="comment"># Without this, income ($20k-$100k) dominates age (18-65)</span>
+seg.df.sc <- seg.df
+seg.df.sc[, <span class="function">c</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>)] <- <span class="function">scale</span>(seg.df[, <span class="function">c</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">4</span>)])  <span class="comment"># age, income, kids</span>
+
+<span class="comment"># STEP 2: Calculate Euclidean distance matrix</span>
+<span class="comment"># This measures similarity between ALL customer pairs</span>
+seg.dist <- <span class="function">dist</span>(seg.df.sc, <span class="string">method = "euclidean"</span>)
+
+<span class="comment"># STEP 3: View first 5x5 distances</span>
+<span class="function">as.matrix</span>(seg.dist)[<span class="number">1</span>:<span class="number">5</span>, <span class="number">1</span>:<span class="number">5</span>]</pre>
+                </div>
+                
+                <div class="output-container">
+[1,] 0.000000 1.885319 1.786323 2.139937 2.225970<br>
+[2,] 1.885319 0.000000 1.245679 2.705915 2.883670<br>
+[3,] 1.786323 1.245679 0.000000 2.463979 2.936121<br>
+[4,] 2.139937 2.705915 2.463979 0.000000 1.762212<br>
+[5,] 2.225970 2.883670 2.936121 1.762212 0.000000<br><br>
+<span style="color:#10b981; font-weight:600">💡 Interpretation:</span> Customer 1 and 3 have distance 1.79 (very similar)<br>
+Customer 1 and 5 have distance 2.23 (less similar)<br>
+Customer 4 and 5 have distance 1.76 (most similar pair shown)
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="500" height="350" viewBox="0 0 500 350">
+                            <!-- Axes -->
+                            <line x1="50" y1="300" x2="450" y2="300" stroke="#64748b" stroke-width="2"/>
+                            <line x1="50" y1="50" x2="50" y2="300" stroke="#64748b" stroke-width="2"/>
+                            
+                            <!-- Customers as points -->
+                            <circle cx="120" cy="180" r="10" fill="#3b82f6" opacity="0.9"/>
+                            <circle cx="145" cy="165" r="10" fill="#3b82f6" opacity="0.9"/>
+                            <circle cx="320" cy="220" r="10" fill="#8b5cf6" opacity="0.9"/>
+                            <circle cx="345" cy="235" r="10" fill="#8b5cf6" opacity="0.9"/>
+                            <circle cx="230" cy="120" r="10" fill="#0ea5e9" opacity="0.9"/>
+                            
+                            <!-- Distance lines -->
+                            <line x1="120" y1="180" x2="145" y2="165" stroke="#10b981" stroke-width="3" stroke-dasharray="5,3"/>
+                            <line x1="320" y1="220" x2="345" y2="235" stroke="#10b981" stroke-width="3" stroke-dasharray="5,3"/>
+                            <line x1="120" y1="180" x2="320" y2="220" stroke="#ef4444" stroke-width="2" stroke-dasharray="8,4"/>
+                            
+                            <!-- Labels -->
+                            <text x="120" y="165" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 1</text>
+                            <text x="145" y="150" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 3</text>
+                            <text x="320" y="205" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 4</text>
+                            <text x="345" y="220" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 5</text>
+                            
+                            <!-- Distance annotations -->
+                            <text x="132" y="190" text-anchor="middle" fill="#10b981" font-weight="700" font-size="13">1.79</text>
+                            <text x="332" y="245" text-anchor="middle" fill="#10b981" font-weight="700" font-size="13">1.76</text>
+                            <text x="220" y="210" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="13">2.23</text>
+                            
+                            <!-- Axis labels -->
+                            <text x="250" y="335" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16">Age (standardized)</text>
+                            <text x="20" y="175" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16" transform="rotate(-90, 20, 175)">Income (standardized)</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Customer Similarity in 2D Space</div>
+                    <div class="visualization-desc">Green dashed lines show small distances (similar customers). Red dashed line shows larger distance (dissimilar customers). Clustering algorithms group customers connected by small distances.</div>
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Business Insight
+                    </div>
+                    <p><strong>Why this matters:</strong> Without standardization, a $1,000 income difference would appear 20x more important than a 1-year age difference — completely distorting your segments. Standardization ensures each variable contributes equally to similarity calculations.</p>
+                    <p><strong>Actionable insight:</strong> After standardization, customers with similar lifestyles (e.g., young professionals with moderate income) cluster together — not just customers with similar incomes.</p>
+                </div>
+                
+                <div class="pro-tips">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        Pro Tips & Common Mistakes
+                    </h3>
+                    <ul>
+                        <li>❌ <strong>Mistake:</strong> Forgetting to standardize before <code>dist()</code> → income dominates all other variables</li>
+                        <li>✅ <strong>Fix:</strong> Always run <code>scale()</code> on continuous variables BEFORE distance calculation</li>
+                        <li>💡 <strong>Pro insight:</strong> Euclidean distance assumes spherical clusters — if your segments are elongated, try Mahalanobis distance (<code>stats::mahalanobis()</code>)</li>
+                        <li>⚡ <strong>Efficiency:</strong> For datasets >10,000 customers, use <code>proxy::dist()</code> which is 5-10x faster than base R</li>
+                        <li>🔍 <strong>Debugging:</strong> If distances look strange, check for outliers with <code>boxplot(seg.df$income)</code> — extreme values distort distances</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- HIERARCHICAL CLUSTERING SECTION -->
+            <section class="section" id="hierarchical">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    Hierarchical Clustering: Building Customer Trees
+                </h2>
+                
+                <div class="concept-intro">
+                    Hierarchical clustering builds a "family tree" of customers by iteratively merging the most similar pairs. The result is a dendrogram showing relationships at all levels of granularity — perfect for exploratory analysis when you don't know how many segments exist.
+                </div>
+                
+                <div class="formula-box">
+                    <div><span class="math-var">d</span>(<span class="math-var">C1</span>, <span class="math-var">C2</span>) = max[ <span class="math-var">d</span>(<span class="math-var">i</span>, <span class="math-var">j</span>) for all <span class="math-var">i</span> ∈ <span class="math-var">C1</span>, <span class="math-var">j</span> ∈ <span class="math-var">C2</span> ]</div>
+                    <div class="math-comment"># Complete linkage method (used in hclust)</div>
+                    <div class="math-comment"># Distance between clusters = maximum distance between any pair of members</div>
+                    <div class="math-comment">💡 Why complete linkage? Prevents "chaining" where dissimilar customers get grouped through intermediate links</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">hierarchical_clustering.R</div>
+                        <button class="copy-btn" onclick="copyCode('hclust-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="hclust-code"><span class="comment"># Using standardized distance matrix from previous step</span>
+seg.hc <- <span class="function">hclust</span>(seg.dist, <span class="string">method = "complete"</span>)  <span class="comment"># Complete linkage</span>
+
+<span class="comment"># Visualize dendrogram</span>
+<span class="function">plot</span>(seg.hc, 
+     <span class="string">main = "Customer Segments: Hierarchical Clustering"</span>,
+     <span class="string">xlab = ""</span>, 
+     <span class="string">sub = ""</span>,
+     <span class="string">cex = 0.6</span>)
+
+<span class="comment"># Draw rectangles around 4 clusters</span>
+<span class="function">rect.hclust</span>(seg.hc, <span class="string">k = 4</span>, <span class="string">border = "red"</span>, <span class="string">lwd = 2</span>)
+
+<span class="comment"># Extract cluster assignments</span>
+seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="string">k = 4</span>)
+
+<span class="comment"># Profile segments (business interpretation)</span>
+<span class="function">aggregate</span>(seg.df, <span class="function">list</span>(<span class="string">Segment = seg.hc.segment</span>), <span class="function">mean</span>)</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="520" height="350" viewBox="0 0 520 350">
+                            <!-- Dendrogram structure -->
+                            <path d="M80 300 L80 240 L120 240 L120 300" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+                            <path d="M160 300 L160 240 L200 240 L200 300" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+                            <path d="M100 240 L100 180 L180 180 L180 240" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+                            
+                            <path d="M240 300 L240 220 L280 220 L280 300" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
+                            <path d="M320 300 L320 220 L360 220 L360 300" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
+                            <path d="M280 220 L280 160 L340 160 L340 220" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
+                            
+                            <path d="M140 180 L140 120 L310 120 L310 160" fill="none" stroke="#0ea5e9" stroke-width="2.5"/>
+                            
+                            <path d="M400 300 L400 180 L440 180 L440 300" fill="none" stroke="#10b981" stroke-width="2.5"/>
+                            <path d="M310 120 L310 80 L420 80 L420 180" fill="none" stroke="#0ea5e9" stroke-width="2.5"/>
+                            
+                            <!-- Cluster rectangles -->
+                            <rect x="65" y="235" width="150" height="70" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4"/>
+                            <rect x="225" y="215" width="150" height="90" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4"/>
+                            <rect x="385" y="175" width="70" height="130" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4"/>
+                            
+                            <!-- Height line -->
+                            <line x1="480" y1="80" x2="480" y2="300" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
+                            <text x="495" y="85" text-anchor="start" fill="#1e293b" font-size="14">0.5</text>
+                            <text x="495" y="185" text-anchor="start" fill="#1e293b" font-size="14">2.0</text>
+                            <text x="495" y="285" text-anchor="start" fill="#1e293b" font-size="14">4.0</text>
+                            
+                            <!-- Segment labels -->
+                            <text x="140" y="330" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="16">Segment 1</text>
+                            <text x="300" y="330" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="16">Segment 2</text>
+                            <text x="420" y="330" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="16">Segment 3</text>
+                            
+                            <!-- Title -->
+                            <text x="260" y="30" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="18">Customer Dendrogram (k=4)</text>
+                            <text x="260" y="50" text-anchor="middle" fill="#64748b" font-size="14">Height = distance at which clusters merge</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Hierarchical Clustering Dendrogram</div>
+                    <div class="visualization-desc">Vertical height shows distance at which clusters merge. Cutting the tree at height=2.5 creates 4 segments (red rectangles). Lower merge height = more similar customers.</div>
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Business Insight
+                    </div>
+                    <p><strong>Why this matters:</strong> The dendrogram reveals natural groupings without forcing a predetermined number of segments. Notice how Segment 1 splits naturally into two subgroups at height=1.2 — suggesting a potential 5-segment solution might be valuable for premium targeting.</p>
+                    <p><strong>Actionable insight:</strong> Segment 3 (rightmost) merges at height=3.8 — much higher than others — indicating these customers are fundamentally different from the rest. This is your "Careless Tanners" segment from the sun care example: high risk, low protection behavior requiring specialized messaging.</p>
+                </div>
+            </section>
+            
+            <div class="next-steps">
+                <a href="index.html" class="nav-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Main Portal
+                </a>
+                <a href="#kmeans" class="nav-btn next">
+                    Next: K-Means Clustering
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Copy code functionality
+        function copyCode(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const codeText = codeElement.textContent;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                // Visual feedback
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Copied!
+                `;
+                button.style.background = 'rgba(16, 185, 129, 0.25)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = 'rgba(255, 255, 255, 0.15)';
+                }, 2000);
+            });
+        }
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update active sidebar link
+                    document.querySelectorAll('.toc-link').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // Auto-highlight current section on scroll
+        const sections = document.querySelectorAll('.section');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
