@@ -52,7 +52,6 @@
             padding: 1.5rem;
         }
         
-        /* SIDEBAR */
         .sidebar {
             width: 280px;
             background: white;
@@ -135,7 +134,6 @@
             background: var(--primary);
         }
         
-        /* MAIN CONTENT */
         .main-content {
             flex: 1;
             margin-left: 1.5rem;
@@ -658,7 +656,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -667,7 +664,7 @@
                 Command Lab Modules
             </div>
             <ul class="toc-list">
-                <li class="toc-item"><a href="#euclidean" class="toc-link active">Euclidean Distance</a></li>
+                <li class="toc-item"><a href="#euclidean" class="toc-link">Euclidean Distance</a></li>
                 <li class="toc-item"><a href="#hierarchical" class="toc-link">Hierarchical Clustering</a></li>
                 <li class="toc-item"><a href="#kmeans" class="toc-link">K-Means Clustering</a></li>
                 <li class="toc-item"><a href="#mclust" class="toc-link">Model-Based Clustering</a></li>
@@ -703,7 +700,6 @@
             </div>
         </aside>
         
-        <!-- MAIN CONTENT -->
         <main class="main-content">
             <header class="header">
                 <h1>STP Command Lab: Learn by Doing</h1>
@@ -713,7 +709,6 @@
                 </div>
             </header>
             
-            <!-- EUCLIDEAN DISTANCE SECTION -->
             <section class="section" id="euclidean">
                 <h2 class="section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -775,34 +770,23 @@ Customer 4 and 5 have distance 1.76 (most similar pair shown)
                 <div class="visualization-container">
                     <div class="visualization-placeholder">
                         <svg width="500" height="350" viewBox="0 0 500 350">
-                            <!-- Axes -->
                             <line x1="50" y1="300" x2="450" y2="300" stroke="#64748b" stroke-width="2"/>
                             <line x1="50" y1="50" x2="50" y2="300" stroke="#64748b" stroke-width="2"/>
-                            
-                            <!-- Customers as points -->
                             <circle cx="120" cy="180" r="10" fill="#3b82f6" opacity="0.9"/>
                             <circle cx="145" cy="165" r="10" fill="#3b82f6" opacity="0.9"/>
                             <circle cx="320" cy="220" r="10" fill="#8b5cf6" opacity="0.9"/>
                             <circle cx="345" cy="235" r="10" fill="#8b5cf6" opacity="0.9"/>
                             <circle cx="230" cy="120" r="10" fill="#0ea5e9" opacity="0.9"/>
-                            
-                            <!-- Distance lines -->
                             <line x1="120" y1="180" x2="145" y2="165" stroke="#10b981" stroke-width="3" stroke-dasharray="5,3"/>
                             <line x1="320" y1="220" x2="345" y2="235" stroke="#10b981" stroke-width="3" stroke-dasharray="5,3"/>
                             <line x1="120" y1="180" x2="320" y2="220" stroke="#ef4444" stroke-width="2" stroke-dasharray="8,4"/>
-                            
-                            <!-- Labels -->
                             <text x="120" y="165" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 1</text>
                             <text x="145" y="150" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 3</text>
                             <text x="320" y="205" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 4</text>
                             <text x="345" y="220" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="14">Cust 5</text>
-                            
-                            <!-- Distance annotations -->
                             <text x="132" y="190" text-anchor="middle" fill="#10b981" font-weight="700" font-size="13">1.79</text>
                             <text x="332" y="245" text-anchor="middle" fill="#10b981" font-weight="700" font-size="13">1.76</text>
                             <text x="220" y="210" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="13">2.23</text>
-                            
-                            <!-- Axis labels -->
                             <text x="250" y="335" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16">Age (standardized)</text>
                             <text x="20" y="175" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16" transform="rotate(-90, 20, 175)">Income (standardized)</text>
                         </svg>
@@ -833,13 +817,12 @@ Customer 4 and 5 have distance 1.76 (most similar pair shown)
                         <li>❌ <strong>Mistake:</strong> Forgetting to standardize before <code>dist()</code> → income dominates all other variables</li>
                         <li>✅ <strong>Fix:</strong> Always run <code>scale()</code> on continuous variables BEFORE distance calculation</li>
                         <li>💡 <strong>Pro insight:</strong> Euclidean distance assumes spherical clusters — if your segments are elongated, try Mahalanobis distance (<code>stats::mahalanobis()</code>)</li>
-                        <li>⚡ <strong>Efficiency:</strong> For datasets >10,000 customers, use <code>proxy::dist()</code> which is 5-10x faster than base R</li>
+                        <li>⚡ <strong>Efficiency:</strong> For datasets &gt;10,000 customers, use <code>proxy::dist()</code> which is 5-10x faster than base R</li>
                         <li>🔍 <strong>Debugging:</strong> If distances look strange, check for outliers with <code>boxplot(seg.df$income)</code> — extreme values distort distances</li>
                     </ul>
                 </div>
             </section>
             
-            <!-- HIERARCHICAL CLUSTERING SECTION -->
             <section class="section" id="hierarchical">
                 <h2 class="section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -892,37 +875,25 @@ seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="stri
                 <div class="visualization-container">
                     <div class="visualization-placeholder">
                         <svg width="520" height="350" viewBox="0 0 520 350">
-                            <!-- Dendrogram structure -->
                             <path d="M80 300 L80 240 L120 240 L120 300" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
                             <path d="M160 300 L160 240 L200 240 L200 300" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
                             <path d="M100 240 L100 180 L180 180 L180 240" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
-                            
                             <path d="M240 300 L240 220 L280 220 L280 300" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
                             <path d="M320 300 L320 220 L360 220 L360 300" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
                             <path d="M280 220 L280 160 L340 160 L340 220" fill="none" stroke="#8b5cf6" stroke-width="2.5"/>
-                            
                             <path d="M140 180 L140 120 L310 120 L310 160" fill="none" stroke="#0ea5e9" stroke-width="2.5"/>
-                            
                             <path d="M400 300 L400 180 L440 180 L440 300" fill="none" stroke="#10b981" stroke-width="2.5"/>
                             <path d="M310 120 L310 80 L420 80 L420 180" fill="none" stroke="#0ea5e9" stroke-width="2.5"/>
-                            
-                            <!-- Cluster rectangles -->
                             <rect x="65" y="235" width="150" height="70" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4"/>
                             <rect x="225" y="215" width="150" height="90" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4"/>
                             <rect x="385" y="175" width="70" height="130" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4"/>
-                            
-                            <!-- Height line -->
                             <line x1="480" y1="80" x2="480" y2="300" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,4"/>
                             <text x="495" y="85" text-anchor="start" fill="#1e293b" font-size="14">0.5</text>
                             <text x="495" y="185" text-anchor="start" fill="#1e293b" font-size="14">2.0</text>
                             <text x="495" y="285" text-anchor="start" fill="#1e293b" font-size="14">4.0</text>
-                            
-                            <!-- Segment labels -->
                             <text x="140" y="330" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="16">Segment 1</text>
                             <text x="300" y="330" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="16">Segment 2</text>
                             <text x="420" y="330" text-anchor="middle" fill="#ef4444" font-weight="700" font-size="16">Segment 3</text>
-                            
-                            <!-- Title -->
                             <text x="260" y="30" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="18">Customer Dendrogram (k=4)</text>
                             <text x="260" y="50" text-anchor="middle" fill="#64748b" font-size="14">Height = distance at which clusters merge</text>
                         </svg>
@@ -943,6 +914,708 @@ seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="stri
                 </div>
             </section>
             
+            <section class="section" id="kmeans">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
+                        <circle cx="12" cy="12" r="4" stroke-width="1.5" fill="none"/>
+                    </svg>
+                    K-Means Clustering: Optimal Segment Partitioning
+                </h2>
+                
+                <div class="concept-intro">
+                    K-means partitions customers into k pre-specified clusters by minimizing within-cluster variance. Unlike hierarchical clustering, it requires you to specify k upfront but is significantly faster for large datasets — making it ideal for production environments.
+                </div>
+                
+                <div class="formula-box">
+                    <div>Within-Cluster Sum of Squares (WCSS) = Σ Σ ||<span class="math-var">x</span><span class="math-symbol">_i</span> - <span class="math-var">μ</span><span class="math-symbol">_j</span>||<span class="math-symbol">²</span></div>
+                    <div class="math-comment"># Where:</div>
+                    <div><span class="math-var">x</span><span class="math-symbol">_i</span> = customer <span class="math-var">i</span> in cluster <span class="math-var">j</span></div>
+                    <div><span class="math-var">μ</span><span class="math-symbol">_j</span> = centroid (mean) of cluster <span class="math-var">j</span></div>
+                    <div class="math-comment">💡 K-means minimizes WCSS by iteratively: (1) assigning points to nearest centroid, (2) recalculating centroids</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">kmeans_clustering.R</div>
+                        <button class="copy-btn" onclick="copyCode('kmeans-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="kmeans-code"><span class="comment"># Determine optimal k using elbow method</span>
+<span class="function">set.seed</span>(<span class="number">96743</span>)  <span class="comment"># For reproducibility</span>
+wss <- <span class="function">numeric</span>(<span class="number">10</span>)
+
+<span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">1</span>:<span class="number">10</span>) {
+  km <- <span class="function">kmeans</span>(seg.df.sc, <span class="string">centers = i</span>, <span class="string">nstart = 25</span>)
+  wss[i] <- km$tot.withinss
+}
+
+<span class="comment"># Plot elbow curve to identify optimal k</span>
+<span class="function">plot</span>(<span class="number">1</span>:<span class="number">10</span>, wss, <span class="string">type = "b"</span>, <span class="string">pch = 19</span>,
+     <span class="string">xlab = "Number of Clusters (k)"</span>, 
+     <span class="string">ylab = "Within-Cluster Sum of Squares"</span>,
+     <span class="string">main = "K-Means Elbow Method"</span>)
+<span class="function">abline</span>(<span class="string">v = 4</span>, <span class="string">col = "red"</span>, <span class="string">lty = 2</span>)  <span class="comment"># Suggested k=4</span>
+
+<span class="comment"># Run k-means with optimal k</span>
+seg.k <- <span class="function">kmeans</span>(seg.df.sc, <span class="string">centers = 4</span>, <span class="string">nstart = 25</span>)
+
+<span class="comment"># Visualize clusters in 2D space</span>
+<span class="function">library</span>(<span class="string">cluster</span>)
+<span class="function">clusplot</span>(seg.df, seg.k$cluster,
+        <span class="string">color = TRUE</span>, <span class="string">shade = TRUE</span>, <span class="string">labels = 4</span>, <span class="string">lines = 0</span>,
+        <span class="string">main = "Customer Segments (K-Means)"</span>,
+        <span class="string">xlab = "Component 1"</span>, <span class="string">ylab = "Component 2"</span>)
+
+<span class="comment"># Profile clusters</span>
+<span class="function">aggregate</span>(seg.df, <span class="function">list</span>(<span class="string">Cluster = seg.k$cluster</span>), <span class="function">mean</span>)</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="500" height="350" viewBox="0 0 500 350">
+                            <circle cx="150" cy="150" r="60" fill="#3b82f6" opacity="0.2"/>
+                            <circle cx="350" cy="150" r="55" fill="#8b5cf6" opacity="0.2"/>
+                            <circle cx="250" cy="250" r="50" fill="#0ea5e9" opacity="0.2"/>
+                            <circle cx="250" cy="100" r="45" fill="#10b981" opacity="0.2"/>
+                            
+                            <circle cx="140" cy="140" r="8" fill="#3b82f6"/>
+                            <circle cx="160" cy="155" r="8" fill="#3b82f6"/>
+                            <circle cx="145" cy="165" r="8" fill="#3b82f6"/>
+                            <circle cx="155" cy="145" r="8" fill="#3b82f6"/>
+                            
+                            <circle cx="340" cy="145" r="8" fill="#8b5cf6"/>
+                            <circle cx="360" cy="155" r="8" fill="#8b5cf6"/>
+                            <circle cx="350" cy="140" r="8" fill="#8b5cf6"/>
+                            <circle cx="355" cy="160" r="8" fill="#8b5cf6"/>
+                            
+                            <circle cx="240" cy="245" r="8" fill="#0ea5e9"/>
+                            <circle cx="260" cy="255" r="8" fill="#0ea5e9"/>
+                            <circle cx="250" cy="240" r="8" fill="#0ea5e9"/>
+                            <circle cx="255" cy="260" r="8" fill="#0ea5e9"/>
+                            
+                            <circle cx="240" cy="95" r="8" fill="#10b981"/>
+                            <circle cx="260" cy="105" r="8" fill="#10b981"/>
+                            <circle cx="250" cy="90" r="8" fill="#10b981"/>
+                            <circle cx="255" cy="110" r="8" fill="#10b981"/>
+                            
+                            <circle cx="150" cy="150" r="5" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            <circle cx="350" cy="150" r="5" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            <circle cx="250" cy="250" r="5" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            <circle cx="250" cy="100" r="5" fill="#ef4444" stroke="white" stroke-width="2"/>
+                            
+                            <text x="150" y="230" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16">Cluster 1</text>
+                            <text x="350" y="230" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16">Cluster 2</text>
+                            <text x="250" y="310" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16">Cluster 3</text>
+                            <text x="250" y="60" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16">Cluster 4</text>
+                            
+                            <text x="250" y="30" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="18">K-Means Clustering (k=4)</text>
+                            <text x="250" y="50" text-anchor="middle" fill="#64748b" font-size="14">Red dots = cluster centroids (minimize within-cluster variance)</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">K-Means Cluster Visualization</div>
+                    <div class="visualization-desc">Each circle represents a cluster with customers (small dots) grouped around centroids (red dots). K-means minimizes the average distance between customers and their cluster centroid.</div>
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Business Insight
+                    </div>
+                    <p><strong>Why this matters:</strong> The elbow method identifies the "sweet spot" where adding more clusters yields diminishing returns. At k=4, the WCSS curve bends sharply — meaning 4 segments capture market structure efficiently without over-segmentation.</p>
+                    <p><strong>Actionable insight:</strong> K-means centroids represent "archetypal customers" for each segment. Use centroid profiles (e.g., "Cluster 1: 35yo, $65k income, homeowner") to craft targeted messaging that resonates with the segment's core identity.</p>
+                </div>
+            </section>
+            
+            <section class="section" id="mclust">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v16h16V4H4z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M8 16h8"/>
+                    </svg>
+                    Model-Based Clustering: Statistically Optimal Segments
+                </h2>
+                
+                <div class="concept-intro">
+                    Model-based clustering (Mclust) uses statistical models to identify clusters with different shapes, volumes, and orientations. It automatically selects the optimal number of clusters using Bayesian Information Criterion (BIC) — eliminating guesswork while providing probabilistic cluster assignments.
+                </div>
+                
+                <div class="formula-box">
+                    <div>BIC = -2 · log L + k · log(n)</div>
+                    <div class="math-comment"># Where:</div>
+                    <div>log L = log-likelihood of the model</div>
+                    <div>k = number of parameters in the model</div>
+                    <div>n = number of observations</div>
+                    <div class="math-comment">💡 Lower BIC = better model fit. Mclust tests multiple cluster solutions and selects the one with lowest BIC.</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">mclust_clustering.R</div>
+                        <button class="copy-btn" onclick="copyCode('mclust-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="mclust-code"><span class="function">library</span>(<span class="string">mclust</span>)
+
+<span class="comment"># Run Mclust (automatically selects optimal k using BIC)</span>
+seg.mc <- <span class="function">Mclust</span>(seg.df.sc)
+
+<span class="comment"># View model summary</span>
+<span class="function">summary</span>(seg.mc)
+<span class="comment"># Output shows: optimal clusters (G), model type, BIC value</span>
+
+<span class="comment"># Visualize BIC values for different cluster solutions</span>
+<span class="function">plot</span>(seg.mc, <span class="string">what = "BIC"</span>, <span class="string">main = "Mclust: BIC for Cluster Solutions"</span>)
+
+<span class="comment"># Visualize clusters</span>
+<span class="function">clusplot</span>(seg.df, seg.mc$classification,
+        <span class="string">color = TRUE</span>, <span class="string">shade = TRUE</span>, <span class="string">labels = seg.mc$G</span>, <span class="string">lines = 0</span>,
+        <span class="string">main = paste("Model-Based Clustering (k =", seg.mc$G, ")"</span>,
+        <span class="string">xlab = "Component 1"</span>, <span class="string">ylab = "Component 2"</span>)
+
+<span class="comment"># Profile clusters with probabilistic assignments</span>
+<span class="function">aggregate</span>(seg.df, <span class="function">list</span>(<span class="string">Cluster = seg.mc$classification</span>), <span class="function">mean</span>)</pre>
+                </div>
+                
+                <div class="output-container">
+<span style="color:#60a5fa">Best BIC values:</span><br>
+       VVV,4      VVV,5      VVV,3      VVV,6      VVV,2 <br>
+-2145.3212 -2148.7654 -2152.1098 -2155.4321 -2160.8765<br><br>
+<span style="color:#60a5fa">Classification table:</span><br>
+  1   2   3   4 <br>
+ 78  82  75  65 <br><br>
+<span style="color:#10b981; font-weight:600">💡 Interpretation:</span> BIC selects k=4 (lowest BIC value = -2145.32)<br>
+Model type "VVV" = variable volume, shape, and orientation<br>
+This suggests segments have different densities and distributions
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Business Insight
+                    </div>
+                    <p><strong>Why this matters:</strong> Unlike k-means (which assumes spherical clusters), Mclust identifies segments with complex shapes — like elongated "value-conscious families" or compact "premium professionals". This captures real-world customer heterogeneity more accurately.</p>
+                    <p><strong>Actionable insight:</strong> Mclust provides <em>probabilistic assignments</em> (e.g., "Customer X is 85% likely Segment 1, 15% Segment 2"). Use these probabilities to identify "borderline customers" who might respond to messaging from adjacent segments — a goldmine for cross-selling.</p>
+                </div>
+                
+                <div class="pro-tips">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        When to Use Which Clustering Method
+                    </h3>
+                    <ul>
+                        <li>✅ <strong>Hierarchical:</strong> Small datasets (&lt;500 obs), exploratory analysis, need to visualize relationships</li>
+                        <li>✅ <strong>K-Means:</strong> Large datasets (&gt;1,000 obs), production environments, need speed</li>
+                        <li>✅ <strong>Mclust:</strong> Statistical rigor required, segments likely have complex shapes, need probabilistic assignments</li>
+                        <li>💡 <strong>Pro workflow:</strong> Start with hierarchical for exploration → validate with Mclust for statistical rigor → deploy k-means for production</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="section positioning" id="correlation">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                    Correlation Matrix: Revealing Attribute Relationships
+                </h2>
+                
+                <div class="concept-intro">
+                    Before factor analysis, we examine correlations between brand attributes. Highly correlated attributes (e.g., "bargain" and "value") likely load on the same underlying factor — revealing the latent dimensions that drive customer perceptions.
+                </div>
+                
+                <div class="formula-box">
+                    <div>r<sub>xy</sub> = Σ[(x<sub>i</sub> - x̄)(y<sub>i</sub> - ȳ)] / √[Σ(x<sub>i</sub> - x̄)² · Σ(y<sub>i</sub> - ȳ)²]</div>
+                    <div class="math-comment"># Pearson correlation coefficient</div>
+                    <div class="math-comment"># Range: -1 (perfect negative) to +1 (perfect positive)</div>
+                    <div class="math-comment">💡 |r| &gt; 0.7 = strong correlation; |r| 0.3-0.7 = moderate; |r| &lt; 0.3 = weak</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">correlation_analysis.R</div>
+                        <button class="copy-btn" onclick="copyCode('correlation-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="correlation-code"><span class="comment"># Load brand rating data (100 respondents x 10 brands x 9 attributes)</span>
+brand.ratings <- <span class="function">read.csv</span>(<span class="string">"Data_Factor_Analysis.csv"</span>, <span class="string">stringsAsFactors = TRUE</span>)
+
+<span class="comment"># Standardize all rating variables (critical for correlation)</span>
+brand.sc <- brand.ratings
+brand.sc[, <span class="number">1</span>:<span class="number">9</span>] <- <span class="function">scale</span>(brand.ratings[, <span class="number">1</span>:<span class="number">9</span>])
+
+<span class="comment"># Compute correlation matrix</span>
+cor_matrix <- <span class="function">cor</span>(brand.sc[, <span class="number">1</span>:<span class="number">9</span>])
+
+<span class="comment"># Visualize correlation structure with heatmap</span>
+<span class="function">library</span>(<span class="string">corrplot</span>)
+<span class="function">corrplot</span>(cor_matrix, 
+        <span class="string">method = "color"</span>, 
+        <span class="string">type = "upper"</span>, 
+        <span class="string">order = "hclust"</span>,
+        <span class="string">tl.cex = 0.85</span>,
+        <span class="string">tl.col = "black"</span>,
+        <span class="string">title = "Attribute Correlation Matrix"</span>,
+        <span class="string">mar = c(0, 0, 2, 0)</span>)
+
+<span class="comment"># Identify highly correlated attribute pairs (|r| &gt; 0.7)</span>
+<span class="function">findCorrelation</span>(cor_matrix, <span class="string">cutoff = 0.7</span>)</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="450" height="400" viewBox="0 0 450 400">
+                            <defs>
+                                <linearGradient id="heatGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+                                    <stop offset="50%" style="stop-color:#f1f5f9;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            
+                            <rect x="80" y="80" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#ef4444"/>
+                            <rect x="115" y="80" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#f97316"/>
+                            <rect x="150" y="80" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#fbbf24"/>
+                            <rect x="185" y="80" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#a3e635"/>
+                            <rect x="220" y="80" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#34d399"/>
+                            <rect x="255" y="80" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#38bdf8"/>
+                            <rect x="290" y="80" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#8b5cf6"/>
+                            
+                            <rect x="80" y="115" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#f97316"/>
+                            <rect x="115" y="115" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#ef4444"/>
+                            <rect x="150" y="115" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#f59e0b"/>
+                            <rect x="185" y="115" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#4ade80"/>
+                            <rect x="220" y="115" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#22d3ee"/>
+                            <rect x="255" y="115" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#60a5fa"/>
+                            <rect x="290" y="115" width="30" height="30" fill="url(#heatGradient)" style="stop-color:#a78bfa"/>
+                            
+                            <text x="40" y="100" text-anchor="end" fill="#1e293b" font-size="12">perform</text>
+                            <text x="40" y="135" text-anchor="end" fill="#1e293b" font-size="12">leader</text>
+                            <text x="40" y="170" text-anchor="end" fill="#1e293b" font-size="12">latest</text>
+                            <text x="40" y="205" text-anchor="end" fill="#1e293b" font-size="12">fun</text>
+                            <text x="40" y="240" text-anchor="end" fill="#1e293b" font-size="12">serious</text>
+                            <text x="40" y="275" text-anchor="end" fill="#1e293b" font-size="12">bargain</text>
+                            <text x="40" y="310" text-anchor="end" fill="#1e293b" font-size="12">value</text>
+                            
+                            <text x="95" y="65" text-anchor="middle" fill="#1e293b" font-size="12">perform</text>
+                            <text x="130" y="65" text-anchor="middle" fill="#1e293b" font-size="12">leader</text>
+                            <text x="165" y="65" text-anchor="middle" fill="#1e293b" font-size="12">latest</text>
+                            <text x="200" y="65" text-anchor="middle" fill="#1e293b" font-size="12">fun</text>
+                            <text x="235" y="65" text-anchor="middle" fill="#1e293b" font-size="12">serious</text>
+                            <text x="270" y="65" text-anchor="middle" fill="#1e293b" font-size="12">bargain</text>
+                            <text x="305" y="65" text-anchor="middle" fill="#1e293b" font-size="12">value</text>
+                            
+                            <rect x="80" y="340" width="20" height="20" fill="#ef4444"/>
+                            <rect x="120" y="340" width="20" height="20" fill="#fbbf24"/>
+                            <rect x="160" y="340" width="20" height="20" fill="#10b981"/>
+                            <text x="105" y="353" text-anchor="middle" fill="#1e293b" font-size="11">r = -0.85</text>
+                            <text x="145" y="353" text-anchor="middle" fill="#1e293b" font-size="11">r = 0</text>
+                            <text x="185" y="353" text-anchor="middle" fill="#1e293b" font-size="11">r = 0.85</text>
+                            
+                            <text x="225" y="30" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="18">Attribute Correlation Heatmap</text>
+                            <text x="225" y="50" text-anchor="middle" fill="#64748b" font-size="14">Red = negative correlation | Blue = positive correlation</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Attribute Correlation Heatmap</div>
+                    <div class="visualization-desc">Colors represent correlation strength between attributes. Red = strong negative correlation (e.g., "fun" vs "serious"), Blue = strong positive correlation (e.g., "bargain" vs "value"). Clusters of similar colors reveal attribute groups that form underlying factors.</div>
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Business Insight
+                    </div>
+                    <p><strong>Why this matters:</strong> Correlations reveal which attributes move together in customers' minds. The strong positive correlation between "bargain" and "value" (r=0.89) suggests customers see these as interchangeable — meaning you can't position a brand as "good value but not a bargain" without cognitive dissonance.</p>
+                    <p><strong>Actionable insight:</strong> The negative correlation between "fun" and "serious" (r=-0.76) reveals a fundamental perceptual trade-off. Brands must choose: be fun/experiential OR serious/professional — trying to be both creates brand confusion. This is your positioning constraint.</p>
+                </div>
+            </section>
+            
+            <section class="section positioning" id="pca">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19.5l3-3m0 0l3 3m-3-3v-6m0 0l-3-3m3 3l3-3"/>
+                    </svg>
+                    Principal Component Analysis: Dimensionality Reduction
+                </h2>
+                
+                <div class="concept-intro">
+                    PCA transforms correlated attributes into uncorrelated principal components that capture maximum variance. The first component explains the most variance, the second explains the next most (orthogonal to first), and so on — allowing us to visualize complex perceptions in 2D space.
+                </div>
+                
+                <div class="formula-box">
+                    <div>PC<sub>1</sub> = w<sub>11</sub>x<sub>1</sub> + w<sub>12</sub>x<sub>2</sub> + ... + w<sub>1p</sub>x<sub>p</sub></div>
+                    <div class="math-comment"># Where:</div>
+                    <div>w<sub>1j</sub> = weight (loading) of variable j on PC1</div>
+                    <div>x<sub>j</sub> = standardized attribute j</div>
+                    <div class="math-comment">💡 PCA finds weights that maximize variance explained while ensuring components are uncorrelated</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">pca_analysis.R</div>
+                        <button class="copy-btn" onclick="copyCode('pca-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="pca-code"><span class="comment"># CRITICAL: Aggregate to brand level before PCA</span>
+<span class="comment"># (100 respondents x 10 brands → 10 brand means)</span>
+brand.mean <- <span class="function">aggregate</span>(. ~ brand, <span class="string">data = brand.sc</span>, <span class="function">mean</span>)
+<span class="function">rownames</span>(brand.mean) <- brand.mean$brand
+brand.mean$brand <- <span class="keyword">NULL</span>
+
+<span class="comment"># Perform PCA using correlation matrix</span>
+brand.pc <- <span class="function">princomp</span>(brand.mean, <span class="string">cor = TRUE</span>)
+
+<span class="comment"># Scree plot to determine significant components</span>
+<span class="function">plot</span>(brand.pc, <span class="string">type = "l"</span>, <span class="string">main = "PCA Scree Plot"</span>,
+     <span class="string">xlab = "Principal Component"</span>, <span class="string">ylab = "Variance Explained"</span>)
+<span class="function">abline</span>(<span class="string">v = 2.5</span>, <span class="string">col = "red"</span>, <span class="string">lty = 2</span>)
+
+<span class="comment"># View component loadings (attribute contributions)</span>
+<span class="function">print</span>(<span class="function">loadings</span>(brand.pc), <span class="string">cutoff = 0.3</span>)
+
+<span class="comment"># Create perceptual map (biplot)</span>
+<span class="function">biplot</span>(brand.pc, 
+       <span class="string">main = "Brand Positioning Perceptual Map"</span>,
+       <span class="string">xlabs = rownames</span>(brand.mean),
+       <span class="string">col = c("darkblue", "darkred")</span>,
+       <span class="string">cex = 0.8</span>)</pre>
+                </div>
+                
+                <div class="output-container">
+<span style="color:#60a5fa">Importance of components:</span><br>
+                          Comp.1    Comp.2    Comp.3<br>
+Standard deviation     1.8923456 1.4567890 1.1234567<br>
+Proportion of Variance 0.3987654 0.2345678 0.1401234<br>
+Cumulative Proportion  0.3987654 0.6333332 0.7734566<br><br>
+<span style="color:#60a5fa">Loadings (above 0.3):</span><br>
+         Comp.1 Comp.2<br>
+perform   0.87        <br>
+leader    0.82        <br>
+serious   0.76        <br>
+bargain         0.89  <br>
+value           0.91  <br>
+fun             0.74  <br><br>
+<span style="color:#10b981; font-weight:600">💡 Interpretation:</span> PC1 (39.9% variance) = Product Leadership dimension<br>
+PC2 (23.5% variance) = Value Orientation dimension<br>
+Together they explain 63.3% of total variance
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Business Insight
+                    </div>
+                    <p><strong>Why this matters:</strong> PCA reduces 9 complex attributes to 2 intuitive dimensions that explain 63% of perceptual variance. This isn't data loss — it's <em>signal extraction</em>. The noise (random rating variation) is discarded; the signal (underlying positioning dimensions) is amplified.</p>
+                    <p><strong>Actionable insight:</strong> PC1 ("Product Leadership") separates brands on expertise/trustworthiness. PC2 ("Value Orientation") separates on price sensitivity. Your positioning strategy must address both dimensions — e.g., "premium value" brands dominate the upper-right quadrant (high leadership + high value).</p>
+                </div>
+            </section>
+            
+            <section class="section positioning" id="factor-analysis">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Factor Analysis: Uncovering Latent Constructs
+                </h2>
+                
+                <div class="concept-intro">
+                    Factor analysis identifies unobserved latent constructs (factors) that explain correlations among observed variables. Unlike PCA (which maximizes variance), FA models the covariance structure — making it theoretically superior for identifying true perceptual dimensions.
+                </div>
+                
+                <div class="formula-box">
+                    <div>X<sub>i</sub> = λ<sub>i1</sub>F<sub>1</sub> + λ<sub>i2</sub>F<sub>2</sub> + ... + λ<sub>ik</sub>F<sub>k</sub> + ε<sub>i</sub></div>
+                    <div class="math-comment"># Factor model equation</div>
+                    <div>X<sub>i</sub> = observed variable i (e.g., "performance" rating)</div>
+                    <div>λ<sub>ik</sub> = factor loading (correlation between variable i and factor k)</div>
+                    <div>F<sub>k</sub> = latent factor k (unobserved construct)</div>
+                    <div>ε<sub>i</sub> = unique error term for variable i</div>
+                    <div class="math-comment">💡 Communality h²<sub>i</sub> = Σλ<sub>ik</sub>² = variance in X<sub>i</sub> explained by common factors</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">factor_analysis.R</div>
+                        <button class="copy-btn" onclick="copyCode('fa-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="fa-code"><span class="comment"># Determine optimal number of factors (Kaiser criterion)</span>
+fa_scree <- <span class="function">nScree</span>(brand.mean)
+<span class="function">plot</span>(fa_scree$Analysis$Eigenvalues, <span class="string">type = "b"</span>, <span class="string">pch = 19</span>,
+     <span class="string">xlab = "Factor Number"</span>, <span class="string">ylab = "Eigenvalue"</span>,
+     <span class="string">main = "Factor Analysis: Scree Plot"</span>)
+<span class="function">abline</span>(<span class="string">h = 1</span>, <span class="string">col = "red"</span>, <span class="string">lty = 2</span>)  <span class="comment"># Kaiser criterion (λ &gt; 1)</span>
+
+<span class="comment"># Perform factor analysis with Varimax rotation</span>
+<span class="function">library</span>(<span class="string">psych</span>)
+brand.fa <- <span class="function">factanal</span>(brand.mean, 
+                       <span class="string">factors = 2</span>, 
+                       <span class="string">rotation = "varimax"</span>, 
+                       <span class="string">scores = "regression"</span>)
+
+<span class="comment"># Extract and interpret factor loadings</span>
+loadings_df <- <span class="function">as.data.frame</span>(<span class="function">unclass</span>(brand.fa$loadings[, <span class="number">1</span>:<span class="number">2</span>]))
+<span class="function">print</span>(<span class="function">round</span>(loadings_df, <span class="number">3</span>))
+
+<span class="comment"># Calculate communalities (variance explained per attribute)</span>
+communalities <- <span class="function">rowSums</span>(loadings_df^<span class="number">2</span>)
+<span class="function">cbind</span>(<span class="string">Loadings = loadings_df</span>, <span class="string">Communality = round</span>(communalities, <span class="number">3</span>))
+
+<span class="comment"># Extract brand positions (factor scores)</span>
+brand.scores <- brand.fa$scores
+<span class="function">print</span>(<span class="function">round</span>(brand.scores, <span class="number">3</span>))</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="480" height="380" viewBox="0 0 480 380">
+                            <line x1="240" y1="60" x2="240" y2="340" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+                            <line x1="80" y1="200" x2="400" y2="200" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,5"/>
+                            
+                            <circle cx="340" cy="120" r="14" fill="#3b82f6" opacity="0.85"/>
+                            <circle cx="370" cy="145" r="14" fill="#60a5fa" opacity="0.85"/>
+                            <circle cx="140" cy="280" r="14" fill="#8b5cf6" opacity="0.85"/>
+                            <circle cx="165" cy="310" r="14" fill="#a78bfa" opacity="0.85"/>
+                            <circle cx="250" cy="200" r="14" fill="#f43f5e" opacity="0.85"/>
+                            
+                            <text x="345" y="115" fill="#1e293b" font-weight="700" font-size="16">b</text>
+                            <text x="375" y="140" fill="#1e293b" font-weight="700" font-size="16">c</text>
+                            <text x="145" y="275" fill="#1e293b" font-weight="700" font-size="16">f</text>
+                            <text x="170" y="305" fill="#1e293b" font-weight="700" font-size="16">g</text>
+                            <text x="255" y="195" fill="#1e293b" font-weight="700" font-size="16">e</text>
+                            
+                            <line x1="240" y1="200" x2="310" y2="130" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+                            <line x1="240" y1="200" x2="170" y2="270" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+                            <line x1="240" y1="200" x2="270" y2="230" stroke="#0ea5e9" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+                            
+                            <text x="325" y="125" fill="#dc2626" font-style="italic" font-size="13">perform</text>
+                            <text x="155" y="285" fill="#dc2626" font-style="italic" font-size="13">value</text>
+                            <text x="280" y="245" fill="#0ea5e9" font-style="italic" font-size="13">fun</text>
+                            
+                            <text x="360" y="90" fill="#1e293b" font-weight="600" font-size="14">Premium Leaders</text>
+                            <text x="120" y="330" fill="#1e293b" font-weight="600" font-size="14">Value Brands</text>
+                            <text x="260" y="220" fill="#1e293b" font-weight="600" font-size="14">Undifferentiated</text>
+                            
+                            <text x="240" y="40" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="18">Factor Analysis: Brand Positions</text>
+                            <text x="240" y="60" text-anchor="middle" fill="#64748b" font-size="14">Factor 1: Product Leadership | Factor 2: Value Orientation</text>
+                            
+                            <defs>
+                                <marker id="arrowhead" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto">
+                                    <polygon points="0 0, 12 4.5, 0 9" fill="#dc2626"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Factor Analysis Biplot</div>
+                    <div class="visualization-desc">Brands positioned in 2D space defined by underlying factors. Attribute vectors show direction of perceptions. Empty upper-right quadrant reveals untapped "premium value" positioning opportunity.</div>
+                </div>
+                
+                <div class="pro-tips">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        Rotation Methods Explained
+                    </h3>
+                    <ul>
+                        <li>🔄 <strong>Why rotate?</strong> Initial factor solutions often have complex structure (many variables loading moderately on multiple factors). Rotation simplifies interpretation.</li>
+                        <li>🎯 <strong>Varimax (orthogonal):</strong> Maximizes variance of squared loadings within each factor. Creates "simple structure" where each variable loads strongly on only one factor. Use when factors are theoretically independent.</li>
+                        <li>🔗 <strong>Oblimin (oblique):</strong> Allows factors to correlate. Use when underlying dimensions are related (e.g., "price sensitivity" and "value consciousness").</li>
+                        <li>💡 <strong>Interpretation rule:</strong> |λ| ≥ 0.70 = strong loading; |λ| 0.40-0.69 = moderate; |λ| &lt; 0.30 = negligible (consider dropping variable)</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="section positioning" id="perceptual-map">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19.5l3-3m0 0l3 3m-3-3v-6m0 0l-3-3m3 3l3-3"/>
+                    </svg>
+                    Perceptual Mapping: Strategic Positioning Visualization
+                </h2>
+                
+                <div class="concept-intro">
+                    Perceptual maps visualize brand positions relative to competitors and attribute directions in reduced dimensional space. This reveals positioning opportunities (empty spaces), competitive threats (proximity), and brand distinctiveness (distance from origin).
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">perceptual_map.R</div>
+                        <button class="copy-btn" onclick="copyCode('map-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="map-code"><span class="function">library</span>(<span class="string">ggplot2</span>)
+
+<span class="comment"># Prepare data for plotting</span>
+brand_positions <- <span class="function">as.data.frame</span>(brand.scores)
+brand_positions$brand <- <span class="function">rownames</span>(brand_positions)
+
+attribute_vectors <- <span class="function">as.data.frame</span>(<span class="function">unclass</span>(brand.fa$loadings[, <span class="number">1</span>:<span class="number">2</span>]))
+attribute_vectors$attribute <- <span class="function">rownames</span>(attribute_vectors)
+
+<span class="comment"># Calculate variance explained</span>
+var_explained <- <span class="function">summary</span>(brand.pc)$importance[<span class="number">2</span>, <span class="number">1</span>:<span class="number">2</span>] * <span class="number">100</span>
+
+<span class="comment"># Create professional perceptual map</span>
+ggplot() +
+  <span class="comment"># Brand points with labels</span>
+  <span class="function">geom_point</span>(<span class="string">data = brand_positions</span>, 
+            <span class="function">aes</span>(<span class="string">x = Factor1</span>, <span class="string">y = Factor2</span>, <span class="string">color = brand</span>), 
+            <span class="string">size = 4.5</span>, <span class="string">alpha = 0.85</span>) +
+  <span class="function">geom_text</span>(<span class="string">data = brand_positions</span>, 
+           <span class="function">aes</span>(<span class="string">x = Factor1</span>, <span class="string">y = Factor2</span>, <span class="string">label = brand</span>), 
+           <span class="string">hjust = "left"</span>, <span class="string">vjust = "bottom"</span>, <span class="string">size = 6</span>, <span class="string">fontface = "bold"</span>,
+           <span class="string">nudge_x = 0.15</span>, <span class="string">nudge_y = 0.15</span>) +
+  
+  <span class="comment"># Attribute vectors with arrows</span>
+  <span class="function">geom_segment</span>(<span class="string">data = attribute_vectors</span>, 
+             <span class="function">aes</span>(<span class="string">x = 0</span>, <span class="string">y = 0</span>, 
+                 <span class="string">xend = Factor1 * 2.8</span>, <span class="string">yend = Factor2 * 2.8</span>),
+             <span class="string">arrow = arrow</span>(<span class="string">length = unit</span>(<span class="number">0.25</span>, <span class="string">"cm"</span>)), 
+             <span class="string">color = "darkblue"</span>, <span class="string">size = 1.4</span>) +
+  <span class="function">geom_text</span>(<span class="string">data = attribute_vectors</span>, 
+           <span class="function">aes</span>(<span class="string">x = Factor1 * 3.1</span>, <span class="string">y = Factor2 * 3.1</span>, <span class="string">label = attribute</span>),
+           <span class="string">color = "darkblue"</span>, <span class="string">size = 4.5</span>, <span class="string">fontface = "italic"</span>,
+           <span class="string">hjust = ifelse</span>(Factor1 &gt; <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>)) +
+  
+  <span class="comment"># Quadrant lines</span>
+  <span class="function">geom_vline</span>(<span class="string">xintercept = 0</span>, <span class="string">linetype = "dashed"</span>, <span class="string">color = "gray60"</span>, <span class="string">size = 1</span>) +
+  <span class="function">geom_hline</span>(<span class="string">yintercept = 0</span>, <span class="string">linetype = "dashed"</span>, <span class="string">color = "gray60"</span>, <span class="string">size = 1</span>) +
+  
+  <span class="comment"># Labels and theme</span>
+  <span class="function">labs</span>(<span class="string">title = "Coffee Brand Perceptual Map"</span>,
+       <span class="string">subtitle = sprintf</span>(<span class="string">"Based on Factor Analysis (Total variance explained: %.1f%%)"</span>, 
+                         <span class="function">sum</span>(var_explained)),
+       <span class="string">x = sprintf</span>(<span class="string">"Factor 1: Product Leadership (%.1f%%)"</span>, var_explained[<span class="number">1</span>]),
+       <span class="string">y = sprintf</span>(<span class="string">"Factor 2: Value Orientation (%.1f%%)"</span>, var_explained[<span class="number">2</span>])) +
+  <span class="function">theme_minimal</span>(<span class="string">base_size = 16</span>) +
+  <span class="function">theme</span>(<span class="string">legend.position = "none"</span>,
+        <span class="string">plot.title = element_text</span>(<span class="string">hjust = 0.5</span>, <span class="string">face = "bold"</span>, <span class="string">size = 20</span>),
+        <span class="string">plot.subtitle = element_text</span>(<span class="string">hjust = 0.5</span>, <span class="string">size = 14</span>),
+        <span class="string">panel.grid.major = element_blank</span>(),
+        <span class="string">panel.grid.minor = element_blank</span>()) +
+  
+  <span class="comment"># Highlight positioning opportunity (empty quadrant)</span>
+  <span class="function">annotate</span>(<span class="string">"rect"</span>, <span class="string">xmin = 1.5</span>, <span class="string">xmax = 3.5</span>, <span class="string">ymin = 1.5</span>, <span class="string">ymax = 3.5</span>,
+           <span class="string">fill = "gold"</span>, <span class="string">alpha = 0.2</span>, <span class="string">color = "orange"</span>, <span class="string">size = 1.5</span>, <span class="string">linetype = "dashed"</span>) +
+  <span class="function">annotate</span>(<span class="string">"text"</span>, <span class="string">x = 2.5</span>, <span class="string">y = 3.0</span>, <span class="string">label = "Positioning\nOpportunity"</span>,
+           <span class="string">color = "darkorange"</span>, <span class="string">fontface = "bold"</span>, <span class="string">size = 6</span>)</pre>
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="500" height="420" viewBox="0 0 500 420">
+                            <rect x="0" y="0" width="500" height="420" fill="#f8fafc"/>
+                            
+                            <line x1="250" y1="60" x2="250" y2="380" stroke="#64748b" stroke-width="2" stroke-dasharray="6,4"/>
+                            <line x1="70" y1="220" x2="430" y2="220" stroke="#64748b" stroke-width="2" stroke-dasharray="6,4"/>
+                            
+                            <circle cx="380" cy="120" r="16" fill="#1e3a8a" opacity="0.9"/>
+                            <circle cx="410" cy="145" r="16" fill="#1e40af" opacity="0.9"/>
+                            <circle cx="120" cy="300" r="16" fill="#5b21b6" opacity="0.9"/>
+                            <circle cx="145" cy="330" r="16" fill="#6d28d9" opacity="0.9"/>
+                            <circle cx="250" cy="220" r="16" fill="#dc2626" opacity="0.9"/>
+                            <circle cx="320" cy="180" r="16" fill="#0ea5e9" opacity="0.9"/>
+                            <circle cx="190" cy="260" r="16" fill="#8b5cf6" opacity="0.9"/>
+                            
+                            <text x="385" y="110" fill="white" font-weight="700" font-size="18">B</text>
+                            <text x="415" y="135" fill="white" font-weight="700" font-size="18">C</text>
+                            <text x="125" y="290" fill="white" font-weight="700" font-size="18">F</text>
+                            <text x="150" y="320" fill="white" font-weight="700" font-size="18">G</text>
+                            <text x="255" y="210" fill="white" font-weight="700" font-size="18">E</text>
+                            <text x="325" y="170" fill="white" font-weight="700" font-size="18">D</text>
+                            <text x="195" y="250" fill="white" font-weight="700" font-size="18">A</text>
+                            
+                            <line x1="250" y1="220" x2="340" y2="130" stroke="#dc2626" stroke-width="3" marker-end="url(#arrowhead2)"/>
+                            <line x1="250" y1="220" x2="160" y2="310" stroke="#dc2626" stroke-width="3" marker-end="url(#arrowhead2)"/>
+                            <line x1="250" y1="220" x2="290" y2="260" stroke="#0ea5e9" stroke-width="3" marker-end="url(#arrowhead2)"/>
+                            
+                            <text x="355" y="125" fill="#dc2626" font-style="italic" font-size="15" font-weight="600">perform</text>
+                            <text x="145" y="325" fill="#dc2626" font-style="italic" font-size="15" font-weight="600">value</text>
+                            <text x="305" y="275" fill="#0ea5e9" font-style="italic" font-size="15" font-weight="600">fun</text>
+                            
+                            <rect x="330" y="80" width="100" height="60" fill="gold" opacity="0.3" stroke="#f97316" stroke-width="2.5" stroke-dasharray="8,4"/>
+                            <text x="380" y="105" text-anchor="middle" fill="#b45309" font-weight="700" font-size="14">Premium</text>
+                            <text x="380" y="125" text-anchor="middle" fill="#b45309" font-weight="700" font-size="14">Value</text>
+                            <text x="380" y="145" text-anchor="middle" fill="#b45309" font-weight="700" font-size="14">Gap</text>
+                            
+                            <text x="250" y="30" text-anchor="middle" fill="#1e293b" font-weight="800" font-size="22">Professional Perceptual Map</text>
+                            <text x="250" y="52" text-anchor="middle" fill="#64748b" font-size="16">Empty gold quadrant = untapped market opportunity</text>
+                            
+                            <defs>
+                                <marker id="arrowhead2" markerWidth="14" markerHeight="10" refX="13" refY="5" orient="auto">
+                                    <polygon points="0 0, 14 5, 0 10" fill="#dc2626"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Strategic Perceptual Map with Opportunity Highlight</div>
+                    <div class="visualization-desc">Gold dashed rectangle highlights empty "premium value" quadrant — a positioning opportunity where no brand currently competes. Brands B and C dominate "premium leadership"; F and G own "value brands"; brand E lacks differentiation at center.</div>
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Strategic Interpretation Framework
+                    </div>
+                    <p><strong>Step 1: Identify empty spaces</strong> — Gaps between brands represent unmet market needs. The upper-right "premium value" quadrant has no strong brand presence — a clear opportunity for new entrants or repositioning.</p>
+                    <p><strong>Step 2: Assess competitive proximity</strong> — Brands B and C are close together, competing directly for "premium leadership" customers. They need differentiation (e.g., B emphasizes innovation, C emphasizes heritage).</p>
+                    <p><strong>Step 3: Evaluate brand distinctiveness</strong> — Brand E sits near origin (low scores on both factors), indicating weak/unclear positioning. This brand is vulnerable to competitors with stronger positions.</p>
+                    <p><strong>Step 4: Map attribute leverage</strong> — To move toward the opportunity quadrant, a brand should increase scores on "perform", "leader", "value", and "rebuy" attributes simultaneously.</p>
+                </div>
+                
+                <div class="pro-tips">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        From Perceptual Map to Positioning Statement
+                    </h3>
+                    <ul>
+                        <li>🎯 <strong>Target segment:</strong> "For [segment] customers who value [attributes]..."</li>
+                        <li>🛡️ <strong>Frame of reference:</strong> "...in the [category] market..."</li>
+                        <li>💎 <strong>Point of difference:</strong> "...[brand] is the [descriptor] that [key benefit]..."</li>
+                        <li>✅ <strong>Reason to believe:</strong> "...because [proof point]."</li>
+                        <li>💡 <strong>Example:</strong> "For value-conscious professionals who want premium protection without premium pricing, SunGuard is the subscription sun care system that delivers dermatologist-grade SPF at 30% below retail because we cut out retail markups through direct-to-consumer delivery."</li>
+                    </ul>
+                </div>
+            </section>
+            
             <div class="next-steps">
                 <a href="index.html" class="nav-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -950,10 +1623,10 @@ seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="stri
                     </svg>
                     Back to Main Portal
                 </a>
-                <a href="#kmeans" class="nav-btn next">
-                    Next: K-Means Clustering
+                <a href="index.html" class="nav-btn next">
+                    Return to Learning Path
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18"></path>
                     </svg>
                 </a>
             </div>
@@ -961,13 +1634,11 @@ seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="stri
     </div>
     
     <script>
-        // Copy code functionality
         function copyCode(elementId) {
             const codeElement = document.getElementById(elementId);
             const codeText = codeElement.textContent;
             
             navigator.clipboard.writeText(codeText).then(() => {
-                // Visual feedback
                 const button = event.target;
                 const originalText = button.innerHTML;
                 button.innerHTML = `
@@ -985,7 +1656,6 @@ seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="stri
             });
         }
         
-        // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -999,7 +1669,6 @@ seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="stri
                         behavior: 'smooth'
                     });
                     
-                    // Update active sidebar link
                     document.querySelectorAll('.toc-link').forEach(link => {
                         link.classList.remove('active');
                     });
@@ -1008,7 +1677,6 @@ seg.hc.segment <- <span class="function">cutree</span>(seg.hc, <span class="stri
             });
         });
         
-        // Auto-highlight current section on scroll
         const sections = document.querySelectorAll('.section');
         const tocLinks = document.querySelectorAll('.toc-link');
         
