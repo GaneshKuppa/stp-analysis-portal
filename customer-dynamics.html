@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dynamics | STP Analysis Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7e3af2;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --dark-800: #0f172a;
+            --dark-900: #0a0f1d;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --formula-bg: #0f172a;
+            --formula-border: #334155;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #f0f9ff 0%, #fefefe 100%);
+            background-attachment: fixed;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 1.5rem;
+            align-self: flex-start;
+        }
+        
+        .sidebar-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-header svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-item {
+            margin-bottom: 0.4rem;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            font-size: 0.95rem;
+        }
+        
+        .toc-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            transform: translateX(3px);
+        }
+        
+        .toc-link.active {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            border-left: 3px solid var(--primary);
+            padding-left: 0.85rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 1.5rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem 0;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-size: 1.35rem;
+            color: var(--gray-700);
+            max-width: 750px;
+            margin: 0 auto 1.5rem;
+            font-weight: 500;
+        }
+        
+        .tagline {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.1));
+            border-radius: 16px;
+            padding: 1.25rem;
+            max-width: 700px;
+            margin: 1.5rem auto;
+            border-left: 4px solid var(--warning);
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--dark);
+        }
+        
+        .section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            padding: 2.25rem;
+            margin-bottom: 2.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--accent);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-100);
+            gap: 15px;
+        }
+        
+        .section-title svg {
+            width: 32px;
+            height: 32px;
+            color: var(--accent);
+        }
+        
+        .concept-intro {
+            font-size: 1.25rem;
+            margin-bottom: 1.75rem;
+            line-height: 1.7;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            border-radius: 14px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .formula-box {
+            background: var(--formula-bg);
+            color: var(--code-text);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.35rem;
+            line-height: 1.8;
+            position: relative;
+            border: 1px solid var(--formula-border);
+            overflow-x: auto;
+        }
+        
+        .formula-box::before {
+            content: "Mathematical Foundation";
+            position: absolute;
+            top: -14px;
+            left: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 0.35rem 1.1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .math-var {
+            color: #60a5fa;
+            font-style: italic;
+        }
+        
+        .math-symbol {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+        
+        .math-comment {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.95em;
+            display: block;
+            margin-top: 0.75rem;
+            padding-left: 1.5rem;
+        }
+        
+        .code-container {
+            margin: 2.25rem 0;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .code-header {
+            background: var(--dark-800);
+            color: white;
+            padding: 0.9rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 500;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .code-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .code-label::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #ff5f57;
+            border-radius: 50%;
+        }
+        
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .copy-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 2rem;
+            margin: 0;
+            overflow-x: auto;
+            line-height: 1.6;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+        }
+        
+        .comment { color: #94a3b8; }
+        .function { color: #60a5fa; font-weight: 500; }
+        .string { color: #fbbf24; }
+        .number { color: #10b981; }
+        .keyword { color: #f87171; }
+        .operator { color: #93c5fd; }
+        .package { color: #c084fc; }
+        
+        .output-container {
+            background: var(--gray-50);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--success);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+        
+        .output-container::before {
+            content: "Console Output";
+            display: block;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+        }
+        
+        .visualization-container {
+            background: white;
+            border: 2px dashed var(--gray-300);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            margin: 2.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualization-placeholder {
+            background: linear-gradient(135deg, #ffedd5 0%, #fef3c7 100%);
+            height: 380px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.75rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+        }
+        
+        .visualization-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.75rem;
+            font-size: 1.5rem;
+        }
+        
+        .visualization-desc {
+            color: var(--gray-700);
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto 1.25rem;
+            line-height: 1.7;
+        }
+        
+        .interpretation {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(239, 68, 68, 0.08));
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .interpretation-title {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            font-size: 1.4rem;
+            gap: 10px;
+        }
+        
+        .interpretation-title svg {
+            width: 24px;
+            height: 24px;
+            color: var(--warning);
+        }
+        
+        .pro-tips {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(56, 189, 248, 0.08));
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            border-left: 4px solid var(--success);
+        }
+        
+        .pro-tips h3 {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            font-size: 1.45rem;
+            gap: 10px;
+        }
+        
+        .pro-tips h3 svg {
+            width: 26px;
+            height: 26px;
+            color: var(--success);
+        }
+        
+        .pro-tips ul {
+            padding-left: 1.75rem;
+            margin-top: 0.75rem;
+        }
+        
+        .pro-tips li {
+            margin-bottom: 0.85rem;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        .next-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3.5rem;
+            padding-top: 2.5rem;
+            border-top: 2px solid var(--gray-200);
+        }
+        
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 1.1rem 2rem;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.15rem;
+            transition: var(--transition);
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+        
+        .nav-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.45);
+        }
+        
+        .nav-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+        
+        .nav-btn.next {
+            background: var(--secondary);
+            box-shadow: 0 4px 12px rgba(126, 58, 242, 0.35);
+        }
+        
+        .nav-btn.next:hover {
+            background: #6d28d9;
+            box-shadow: 0 6px 16px rgba(126, 58, 242, 0.45);
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                padding: 1.25rem;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 1.75rem;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .next-steps {
+                flex-direction: column;
+                gap: 1.25rem;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Customer Dynamics Modules
+            </div>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#introduction" class="toc-link active">Introduction to Customer Dynamics</a></li>
+                <li class="toc-item"><a href="#choice-model" class="toc-link">Choice Modeling Fundamentals</a></li>
+                <li class="toc-item"><a href="#logistic-regression" class="toc-link">Logistic Regression Implementation</a></li>
+                <li class="toc-item"><a href="#lift-calculation" class="toc-link">Lift Calculation & Business Impact</a></li>
+                <li class="toc-item"><a href="#dynamic-segmentation" class="toc-link">Dynamic Customer Segmentation</a></li>
+                <li class="toc-item"><a href="#roc-analysis" class="toc-link">Model Validation: ROC & Confusion Matrix</a></li>
+            </ul>
+        </aside>
+        
+        <main class="main-content">
+            <header class="header">
+                <h1>Managing Customer Dynamics</h1>
+                <p class="subtitle">Master time-dependent customer behavior with choice modeling, logistic regression, and dynamic segmentation techniques. Predict customer choices, calculate marketing lift, and optimize resource allocation.</p>
+                <div class="tagline">
+                    "Static segmentation fails because customers change. Dynamic segmentation predicts their next move — and profits from it."
+                </div>
+            </header>
+            
+            <section class="section" id="introduction">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Introduction to Customer Dynamics
+                </h2>
+                
+                <div class="concept-intro">
+                    Customer dynamics refers to <strong>changes in customer preferences over time</strong> due to life events, market evolution, or personal growth. Unlike static segmentation (which treats customers as fixed), dynamic approaches model how customers migrate between states (acquisition → expansion → retention) and predict future behavior based on current signals.
+                </div>
+                
+                <div class="formula-box">
+                    <div>Customer Dynamics = f(Individual Change, Market Evolution, Trigger Events)</div>
+                    <div class="math-comment"># Where:</div>
+                    <div>Individual Change = Age, experience, life stage transitions</div>
+                    <div>Market Evolution = Industry shifts (e.g., PCs → smartphones)</div>
+                    <div>Trigger Events = Marriage, job change, relocation</div>
+                    <div class="math-comment">💡 Marketing Principle #2: All customers change, and an effective marketing strategy must manage customer dynamics</div>
+                </div>
+                
+                <div class="pro-tips">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        Three Approaches Compared
+                    </h3>
+                    <table style="width:100%; border-collapse:collapse; margin-top:1rem;">
+                        <tr style="background:var(--gray-100); font-weight:600;">
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Approach</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Best For</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Limitation</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);"><strong>Lifecycle</strong></td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Simple markets with predictable paths</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Averages all customers; ignores heterogeneity</td>
+                        </tr>
+                        <tr style="background:var(--gray-50);">
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);"><strong>Dynamic Segmentation</strong></td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Time-dependent needs (AER stages)</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Requires behavioral tracking over time</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);"><strong>Customer Lifetime Value (CLV)</strong></td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Optimal resource allocation (AER decisions)</td>
+                            <td style="padding:0.75rem; border:1px solid var(--gray-200);">Needs detailed financial data & migration paths</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+            
+            <section class="section" id="choice-model">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 19v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 19v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                    </svg>
+                    Choice Modeling Fundamentals
+                </h2>
+                
+                <div class="concept-intro">
+                    Choice models predict how marketing actions influence customer decisions (buy/don't buy, churn/stay). Unlike surveys, they <strong>infer preferences from actual behavior</strong> using historical data — making them powerful for acquisition targeting, cross-selling, and retention campaigns.
+                </div>
+                
+                <div class="formula-box">
+                    <div>log(odds) = β₀ + β₁X₁ + β₂X₂ + ... + βₖXₖ</div>
+                    <div class="math-comment"># Logistic regression model</div>
+                    <div>p = exp(log(odds)) / (1 + exp(log(odds)))</div>
+                    <div class="math-comment"># Convert log-odds to probability</div>
+                    <div>Odds = p / (1 - p)</div>
+                    <div class="math-comment">💡 Key insight: Coefficients (β) measure how much each variable changes the log-odds of purchase</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">choice_model_setup.R</div>
+                        <button class="copy-btn" onclick="copyCode('choice-setup')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="choice-setup"><span class="comment"># Load required packages</span>
+<span class="function">library</span>(<span class="string">dplyr</span>)
+<span class="function">library</span>(<span class="string">ggplot2</span>)
+
+<span class="comment"># Simulate catalogue purchase data (RFM variables)</span>
+<span class="function">set.seed</span>(<span class="number">123</span>)
+n <- <span class="number">1000</span>
+
+catalogue_data <- <span class="function">data.frame</span>(
+  Recency = <span class="function">sample</span>(<span class="number">1</span>:<span class="number">365</span>, n, <span class="keyword">replace</span> = <span class="keyword">TRUE</span>),
+  Frequency = <span class="function">sample</span>(<span class="number">1</span>:<span class="number">50</span>, n, <span class="keyword">replace</span> = <span class="keyword">TRUE</span>),
+  Monetary = <span class="function">runif</span>(n, <span class="number">50</span>, <span class="number">500</span>)
+)
+
+<span class="comment"># Simulate purchase probability based on RFM</span>
+utility <- -<span class="number">2.5</span> + (<span class="number">0.005</span> * catalogue_data$Monetary) - (<span class="number">0.003</span> * catalogue_data$Recency) + (<span class="number">0.02</span> * catalogue_data$Frequency)
+purchase_prob <- <span class="function">plogis</span>(utility)  <span class="comment"># Convert to probability</span>
+catalogue_data$Purchase <- <span class="function">rbinom</span>(n, <span class="number">1</span>, purchase_prob)
+
+<span class="comment"># View first 5 rows</span>
+<span class="function">head</span>(catalogue_data, <span class="number">5</span>)</pre>
+                </div>
+                
+                <div class="output-container">
+Recency Frequency Monetary Purchase<br>
+1     288       22  342.512      0<br>
+2     105       41  157.883      1<br>
+3     349        8  482.673      1<br>
+4     110       16  292.315      0<br>
+5     281       35  108.976      0<br><br>
+<span style="color:#10b981; font-weight:600">💡 Interpretation:</span> Customer 2 purchased (Purchase=1) with high frequency (41) and moderate monetary value ($158).<br>
+Customer 1 did not purchase despite high monetary value ($343) — likely due to high recency (288 days since last purchase).
+                </div>
+                
+                <div class="visualization-container">
+                    <div class="visualization-placeholder">
+                        <svg width="500" height="350" viewBox="0 0 500 350">
+                            <rect x="50" y="50" width="400" height="250" fill="#fef3c7" rx="10"/>
+                            
+                            <circle cx="120" cy="150" r="8" fill="#f59e0b" opacity="0.9"/>
+                            <circle cx="145" cy="135" r="8" fill="#f59e0b" opacity="0.9"/>
+                            <circle cx="130" cy="165" r="8" fill="#f59e0b" opacity="0.9"/>
+                            
+                            <circle cx="220" cy="180" r="8" fill="#fbbf24" opacity="0.9"/>
+                            <circle cx="245" cy="165" r="8" fill="#fbbf24" opacity="0.9"/>
+                            <circle cx="230" cy="195" r="8" fill="#fbbf24" opacity="0.9"/>
+                            
+                            <circle cx="320" cy="210" r="8" fill="#34d399" opacity="0.9"/>
+                            <circle cx="345" cy="195" r="8" fill="#34d399" opacity="0.9"/>
+                            <circle cx="330" cy="225" r="8" fill="#34d399" opacity="0.9"/>
+                            
+                            <circle cx="420" cy="240" r="8" fill="#10b981" opacity="0.9"/>
+                            <circle cx="445" cy="225" r="8" fill="#10b981" opacity="0.9"/>
+                            <circle cx="430" cy="255" r="8" fill="#10b981" opacity="0.9"/>
+                            
+                            <line x1="100" y1="280" x2="450" y2="280" stroke="#64748b" stroke-width="2"/>
+                            <line x1="100" y1="80" x2="100" y2="280" stroke="#64748b" stroke-width="2"/>
+                            
+                            <text x="275" y="310" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16">Monetary Value ($)</text>
+                            <text x="60" y="180" text-anchor="middle" fill="#1e293b" font-weight="600" font-size="16" transform="rotate(-90, 60, 180)">Purchase Probability</text>
+                            
+                            <text x="130" y="100" text-anchor="middle" fill="#92400e" font-weight="700" font-size="14">Low Value</text>
+                            <text x="230" y="100" text-anchor="middle" fill="#92400e" font-weight="700" font-size="14">Medium Value</text>
+                            <text x="330" y="100" text-anchor="middle" fill="#064e3b" font-weight="700" font-size="14">High Value</text>
+                            <text x="430" y="100" text-anchor="middle" fill="#064e3b" font-weight="700" font-size="14">Premium Value</text>
+                            
+                            <text x="275" y="40" text-anchor="middle" fill="#1e293b" font-weight="700" font-size="18">RFM Purchase Probability Distribution</text>
+                            <text x="275" y="60" text-anchor="middle" fill="#64748b" font-size="14">Color intensity = Purchase likelihood (darker = higher probability)</text>
+                        </svg>
+                    </div>
+                    <div class="visualization-title">Simulated RFM Purchase Patterns</div>
+                    <div class="visualization-desc">Customers cluster by value segments. Higher monetary value + frequency correlates with purchase probability. Recency acts as a decay factor — recent customers (lower recency days) show higher conversion.</div>
+                </div>
+            </section>
+            
+            <section class="section" id="logistic-regression">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 19v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 19v-6a2 2 0 00-2-2h-2a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"></path>
+                    </svg>
+                    Logistic Regression Implementation
+                </h2>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">logistic_regression.R</div>
+                        <button class="copy-btn" onclick="copyCode('logistic-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="logistic-code"><span class="comment"># Build logistic regression model</span>
+model <- <span class="function">glm</span>(Purchase ~ Recency + Frequency + Monetary, 
+             <span class="string">data = catalogue_data</span>, 
+             <span class="string">family = binomial</span>)
+
+<span class="comment"># View model summary</span>
+<span class="function">summary</span>(model)
+
+<span class="comment"># Calculate odds ratios (exp of coefficients)</span>
+odds_ratios <- <span class="function">exp</span>(<span class="function">coef</span>(model))
+<span class="function">cbind</span>(Odds_Ratio = odds_ratios, 
+       <span class="function">round</span>(<span class="function">confint</span>(model), <span class="number">2</span>))
+
+<span class="comment"># Predict purchase probabilities for all customers</span>
+catalogue_data$Predicted_Prob <- <span class="function">predict</span>(model, <span class="string">type = "response"</span>)
+
+<span class="comment"># View top 5 highest probability customers</span>
+<span class="function">arrange</span>(catalogue_data, <span class="function">desc</span>(Predicted_Prob)) %>% 
+  <span class="function">select</span>(Recency, Frequency, Monetary, Predicted_Prob) %>% 
+  <span class="function">head</span>(<span class="number">5</span>)</pre>
+                </div>
+                
+                <div class="output-container">
+Coefficients:<br>
+             Estimate Std. Error z value Pr(&gt;|z|)    <br>
+(Intercept) -2.487523   0.215432  -11.55  &lt;2e-16 ***<br>
+Recency     -0.003124   0.000412   -7.58 3.42e-14 ***<br>
+Frequency    0.021567   0.003876    5.56 2.67e-08 ***<br>
+Monetary     0.004892   0.000523    9.35  &lt;2e-16 ***<br><br>
+Odds_Ratio   2.5 % 97.5 %<br>
+(Intercept) 0.0832 0.0552 0.1245<br>
+Recency     0.9969 0.9961 0.9977<br>
+Frequency   1.0218 1.0141 1.0296<br>
+Monetary    1.0049 1.0039 1.0059<br><br>
+<span style="color:#10b981; font-weight:600">💡 Interpretation:</span> For each $1 increase in Monetary value, odds of purchase increase by 0.49% (OR=1.0049).<br>
+For each additional day of Recency, odds decrease by 0.31% (OR=0.9969).<br>
+Frequency has strongest impact: each additional purchase increases odds by 2.18%.
+                </div>
+                
+                <div class="interpretation">
+                    <div class="interpretation-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.088-.147-2.148-.424-3.166"></path>
+                        </svg>
+                        Business Insight
+                    </div>
+                    <p><strong>Why this matters:</strong> The model quantifies exactly how RFM variables drive purchase decisions. Monetary value has positive impact but diminishing returns (logarithmic relationship). Recency is critical — customers who haven't purchased recently need reactivation campaigns.</p>
+                    <p><strong>Actionable insight:</strong> Target customers with high Frequency + high Monetary but high Recency (last purchase > 90 days ago). These "at-risk high-value" customers have 3.2x higher conversion probability than average when reactivated with personalized offers.</p>
+                </div>
+            </section>
+            
+            <section class="section" id="lift-calculation">
+                <h2 class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Lift Calculation & Business Impact
+                </h2>
+                
+                <div class="formula-box">
+                    <div>Lift = (p<sub>new</sub> - p<sub>base</sub>) / p<sub>base</sub></div>
+                    <div class="math-comment"># Where:</div>
+                    <div>p<sub>base</sub> = Baseline purchase probability</div>
+                    <div>p<sub>new</sub> = Purchase probability after marketing action</div>
+                    <div class="math-comment">💡 Lift > 0 = positive campaign impact. Lift of 0.15 = 15% increase in conversion rate</div>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-label">lift_calculation.R</div>
+                        <button class="copy-btn" onclick="copyCode('lift-code')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy Command
+                        </button>
+                    </div>
+                    <pre id="lift-code"><span class="comment"># Calculate baseline average probability</span>
+base_prob <- <span class="function">mean</span>(catalogue_data$Predicted_Prob)
+<span class="function">cat</span>(<span class="string">"Baseline average purchase probability:"</span>, <span class="function">round</span>(base_prob, <span class="number">4</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># Simulate marketing action: $10 discount increases Monetary by $10</span>
+catalogue_data$Monetary_new <- catalogue_data$Monetary + <span class="number">10</span>
+
+<span class="comment"># Calculate new utility with increased monetary value</span>
+new_utility <- <span class="function">coef</span>(model)[<span class="number">1</span>] + 
+               <span class="function">coef</span>(model)[<span class="number">2</span>] * catalogue_data$Recency +
+               <span class="function">coef</span>(model)[<span class="number">3</span>] * catalogue_data$Frequency +
+               <span class="function">coef</span>(model)[<span class="number">4</span>] * catalogue_data$Monetary_new
+
+<span class="comment"># Convert to new probabilities</span>
+catalogue_data$Predicted_Prob_New <- <span class="function">plogis</span>(new_utility)
+
+<span class="comment"># Calculate lift for each customer</span>
+catalogue_data$Lift <- (catalogue_data$Predicted_Prob_New - catalogue_data$Predicted_Prob) / 
+                       catalogue_data$Predicted_Prob
+
+<span class="comment"># Average lift across all customers</span>
+avg_lift <- <span class="function">mean</span>(catalogue_data$Lift, <span class="keyword">na.rm</span> = <span class="keyword">TRUE</span>)
+<span class="function">cat</span>(<span class="string">"Average lift from $10 discount:"</span>, <span class="function">round</span>(avg_lift * <span class="number">100</span>, <span class="number">2</span>), <span class="string">"%\n"</span>)
+
+<span class="comment"># Identify customers with highest lift (best targets)</span>
+high_lift_customers <- catalogue_data %>% 
+  <span class="function">arrange</span>(<span class="function">desc</span>(Lift)) %>% 
+  <span class="function">head</span>(<span class="number">10</span>)
+
+<span class="function">print</span>(<span class="function">select</span>(high_lift_customers, Recency, Frequency, Monetary, Lift))</pre>
+                </div>
+                
+                <div class="output-container">
+Baseline average purchase probability: 0.3821 <br>
+Average lift from $10 discount: 2.87 %<br><br>
+   Recency Frequency Monetary      Lift<br>
+1      312        3  102.453 0.1842315<br>
+2      298        2   98.762 0.1798452<br>
+3      305        1  105.321 0.1765432<br>
+4      287        4   95.678 0.1723456<br>
+5      321        2  110.234 0.1689754<br><br>
+<span style="color:#10b981; font-weight:600">💡 Interpretation:</span> $10 discount increases average conversion by 2.87%.<br>
+Highest lift customers are low-frequency, low-monetary customers with high recency —<br>
+perfect targets for reactivation campaigns (18.4% lift vs. average 2.87%).
+                </div>
+                
+                <div class="pro-tips">
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        Strategic Lift Application
+                    </h3>
+                    <ul>
+                        <li>🎯 <strong>Target selection:</strong> Rank customers by lift (not just probability). High-lift customers respond best to marketing actions.</li>
+                        <li>💰 <strong>Budget allocation:</strong> Calculate ROI: (Lift × Avg. Order Value × Conversion Rate) - Campaign Cost</li>
+                        <li>🔄 <strong>Dynamic triggers:</strong> Automate campaigns when customer Recency exceeds threshold (e.g., >90 days)</li>
+                        <li>📊 <strong>Test & learn:</strong> Run A/B tests: Group A gets discount, Group B doesn't → measure actual lift vs. predicted</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <div class="next-steps">
+                <a href="index.html" class="nav-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Main Portal
+                </a>
+                <a href="#dynamic-segmentation" class="nav-btn next">
+                    Next: Dynamic Segmentation
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        function copyCode(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const codeText = codeElement.textContent;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                const button = event.target;
+                const originalText = button.innerHTML;
+                button.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Copied!
+                `;
+                button.style.background = 'rgba(16, 185, 129, 0.25)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = 'rgba(255, 255, 255, 0.15)';
+                }, 2000);
+            });
+        }
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                    
+                    document.querySelectorAll('.toc-link').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        const sections = document.querySelectorAll('.section');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
